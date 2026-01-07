@@ -76,24 +76,20 @@ button {
 .nav {
   display: flex;
   gap: 12px;
-  background: #f2f2f7;
-  padding: 6px;
-  border-radius: 999px;
 }
 
 .tab {
-  border: none;
-  background: transparent;
-  padding: 8px 18px;
-  border-radius: 999px;
-  color: var(--muted);
+  border: 1px solid var(--border);
+  background: var(--surface-strong);
+  padding: 8px 20px;
+  border-radius: 12px;
+  color: var(--text);
   font-weight: 600;
   cursor: pointer;
 }
 
 .tab.active {
-  background: var(--surface-strong);
-  color: var(--text);
+  border-color: rgba(0, 122, 255, 0.3);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
@@ -103,26 +99,50 @@ button {
   gap: 12px;
 }
 
-.user {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  font-size: 12px;
-  color: var(--muted);
+.user-button {
+  border: none;
+  background: transparent;
+  display: grid;
+  gap: 6px;
+  align-items: center;
+  justify-items: center;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.user-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--surface-strong);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.user-icon svg,
+.icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: #5c5c5f;
 }
 
 .user-name {
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text);
   font-weight: 600;
 }
 
-.pill {
+.icon-button {
   border: 1px solid var(--border);
   background: var(--surface-strong);
-  padding: 8px 14px;
-  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
   font-size: 12px;
+  display: grid;
+  place-items: center;
   cursor: pointer;
 }
 
@@ -149,16 +169,6 @@ button {
   margin-bottom: 8px;
 }
 
-.badge {
-  display: inline-flex;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: var(--accent-soft);
-  color: var(--accent);
-  font-size: 11px;
-  font-weight: 600;
-}
-
 .menu {
   display: flex;
   flex-direction: column;
@@ -180,14 +190,6 @@ button {
   background: var(--surface-strong);
   border: 1px solid rgba(0, 122, 255, 0.3);
   box-shadow: 0 8px 20px rgba(0, 122, 255, 0.18);
-}
-
-.sidebar-footer {
-  margin-top: auto;
-  font-size: 12px;
-  color: var(--muted);
-  display: grid;
-  gap: 12px;
 }
 
 .primary {
