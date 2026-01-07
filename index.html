@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NetWeb 本地项目管理</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="top-bar">
+        <div class="brand">
+          <div class="brand-icon">NW</div>
+          <div>
+            <h1>NetWeb</h1>
+            <p>本地数据网项目管理</p>
+          </div>
+        </div>
+        <nav class="nav">
+          <button class="tab active">项目管理</button>
+          <button class="tab">系统管理</button>
+        </nav>
+        <div class="actions">
+          <div class="user">
+            <span class="user-label">用户</span>
+            <span class="user-name">Admin</span>
+          </div>
+          <button class="pill">明亮/黑暗模式切换</button>
+          <button class="pill">主题切换</button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <aside class="sidebar">
+          <div class="sidebar-header">
+            <h2>项目名称</h2>
+            <span class="badge">macOS &amp; Windows</span>
+          </div>
+          <div class="menu">
+            <button class="menu-item active">项目参数 1</button>
+            <button class="menu-item">项目参数 2</button>
+            <button class="menu-item">项目参数 3</button>
+            <button class="menu-item">项目参数 4</button>
+            <button class="menu-item">项目参数 5</button>
+            <button class="menu-item">项目参数 6</button>
+          </div>
+          <div class="sidebar-footer">
+            <p>离线可用 · 本地部署</p>
+            <button class="primary">保存配置</button>
+          </div>
+        </aside>
+
+        <section class="content">
+          <div class="content-header">
+            <div>
+              <h2>项目概览</h2>
+              <p>集中展示项目状态、拓扑与执行任务。</p>
+            </div>
+            <div class="content-actions">
+              <button class="ghost">查看日志</button>
+              <button class="primary">创建任务</button>
+            </div>
+          </div>
+
+          <div class="cards">
+            <article class="card">
+              <h3>拓扑状态</h3>
+              <p>已发现 1,248 节点，核心链路稳定。</p>
+              <div class="metric">
+                <span>健康度</span>
+                <strong>98%</strong>
+              </div>
+            </article>
+            <article class="card">
+              <h3>脚本执行</h3>
+              <p>今日执行 46 次，成功率 99.6%。</p>
+              <div class="metric">
+                <span>平均耗时</span>
+                <strong>12s</strong>
+              </div>
+            </article>
+            <article class="card">
+              <h3>告警看板</h3>
+              <p>正在监控 32 条告警，均为低风险。</p>
+              <div class="metric">
+                <span>待处理</span>
+                <strong>2</strong>
+              </div>
+            </article>
+          </div>
+
+          <div class="canvas">
+            <div class="canvas-header">
+              <h3>主视图</h3>
+              <span>拖拽节点生成拓扑 · 兼容 Mac/Windows</span>
+            </div>
+            <div class="canvas-body">
+              <div class="placeholder">
+                <div class="placeholder-icon">◎</div>
+                <p>主内容区域</p>
+                <span>在此呈现拓扑、脚本与监控面板</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
