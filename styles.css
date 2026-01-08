@@ -12,6 +12,8 @@
   --shadow-soft: 0 10px 30px rgba(25, 31, 44, 0.08);
   --glow: 0 0 0 1px rgba(255, 255, 255, 0.6) inset,
     0 10px 30px rgba(0, 0, 0, 0.08);
+  --page-bg: radial-gradient(circle at top, #ffffff 0%, #f4f5f7 40%, #e8ebf0 100%);
+  --brand-gradient: linear-gradient(135deg, #5ac8fa, #007aff);
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 }
@@ -23,9 +25,10 @@
 }
 
 body {
-  background: radial-gradient(circle at top, #ffffff 0%, #f4f5f7 40%, #e8ebf0 100%);
+  background: var(--page-bg);
   color: var(--text);
   min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 button,
@@ -36,6 +39,21 @@ input {
 html,
 body {
   height: 100%;
+}
+
+body.theme-dark {
+  color-scheme: dark;
+  --bg: #0c0f14;
+  --surface: rgba(20, 24, 34, 0.92);
+  --surface-strong: rgba(25, 30, 44, 0.98);
+  --text: #f5f6f8;
+  --muted: #b2b8c4;
+  --border: rgba(148, 163, 184, 0.24);
+  --shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
+  --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --glow: 0 0 0 1px rgba(255, 255, 255, 0.08) inset,
+    0 10px 30px rgba(0, 0, 0, 0.45);
+  --page-bg: radial-gradient(circle at top, #1c2332 0%, #0f141d 50%, #0a0f16 100%);
 }
 
 .app {
@@ -70,7 +88,7 @@ body {
   width: 44px;
   height: 44px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #5ac8fa, #007aff);
+  background: var(--brand-gradient);
   color: #fff;
   display: grid;
   place-items: center;
@@ -196,7 +214,7 @@ body {
 .icon-button svg {
   width: 18px;
   height: 18px;
-  fill: #3c3c43;
+  fill: var(--text);
   filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
 }
 
@@ -286,6 +304,12 @@ body {
   font-weight: 600;
   cursor: pointer;
   box-shadow: 0 12px 26px rgba(0, 102, 255, 0.35);
+}
+
+.primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+  box-shadow: none;
 }
 
 .ghost {
@@ -454,6 +478,118 @@ body {
   gap: 8px;
 }
 
+.task-card {
+  width: min(860px, 92vw);
+}
+
+.task-table {
+  display: grid;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+.task-row {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1.4fr 1fr 0.8fr;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--text);
+}
+
+.task-row span {
+  padding: 10px 12px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.task-row span:last-child {
+  border-right: none;
+  justify-content: center;
+}
+
+.task-header {
+  background: rgba(245, 247, 252, 0.95);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.task-row:nth-child(even) {
+  background: rgba(250, 251, 253, 0.85);
+}
+
+.progress {
+  position: relative;
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.25);
+  overflow: hidden;
+}
+
+.progress-fill {
+  position: absolute;
+  inset: 0;
+  width: var(--progress);
+  border-radius: inherit;
+  animation: progress-fill 0.8s ease-out;
+}
+
+.progress-fill.success {
+  background: linear-gradient(90deg, #34d399, #10b981);
+}
+
+.progress-fill.danger {
+  background: linear-gradient(90deg, #f87171, #ef4444);
+}
+
+.progress-text {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.result {
+  font-weight: 600;
+  color: var(--text);
+  position: relative;
+}
+
+.result.success {
+  color: #10b981;
+}
+
+.result.failed {
+  color: #ef4444;
+  cursor: help;
+}
+
+.result.failed::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translateX(-50%);
+  background: rgba(18, 18, 22, 0.92);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.result.failed:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
 .task-popover {
   background: transparent;
   align-items: flex-start;
@@ -511,10 +647,46 @@ body {
   background: #f5f6f8;
 }
 
+body.theme-dark .field input {
+  background: rgba(15, 23, 42, 0.6);
+  color: var(--text);
+}
+
 .version-text {
   font-size: 14px;
   color: var(--muted);
   text-align: center;
+}
+
+.version-modal .modal-card {
+  border: 1px solid rgba(239, 68, 68, 0.45);
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.15), 0 20px 50px rgba(239, 68, 68, 0.25);
+}
+
+.version-modal .version-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: #ef4444;
+}
+
+body.theme-dark .task-row,
+body.theme-dark .task-header,
+body.theme-dark .task-row:nth-child(even) {
+  background: rgba(20, 24, 34, 0.9);
+}
+
+body.theme-dark .task-table {
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+@keyframes progress-fill {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: var(--progress);
+  }
 }
 
 @media (max-width: 960px) {
