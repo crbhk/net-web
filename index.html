@@ -21,8 +21,8 @@
             <button class="tab active" data-menu="project-menu">项目管理</button>
             <div class="nav-panel" id="project-menu">
               <button class="nav-item" data-action="new-project">新建项目</button>
-              <button class="nav-item" data-action="project-home">正在进行</button>
-              <button class="nav-item" data-action="project-home">已完成</button>
+              <button class="nav-item" data-action="project-ongoing">正在进行</button>
+              <button class="nav-item" data-action="project-completed">已完成</button>
             </div>
           </div>
           <div class="nav-group">
@@ -30,7 +30,7 @@
             <div class="nav-panel" id="system-menu">
               <button class="nav-item" data-action="system-basic">基本设置</button>
               <button class="nav-item">安全管理</button>
-              <button class="nav-item">操作日志</button>
+              <button class="nav-item" data-action="system-log">操作日志</button>
             </div>
           </div>
         </nav>
@@ -73,14 +73,10 @@
 
       <main class="main-area">
         <section class="home-view" id="home-view">
-          <div class="home-header">
-            <h2>项目管理</h2>
-            <p>请选择需要进入的功能</p>
-          </div>
           <div class="home-cards">
             <button class="home-card" data-action="new-project">新建项目</button>
-            <button class="home-card" data-action="project-home">正在进行</button>
-            <button class="home-card" data-action="project-home">已完成</button>
+            <button class="home-card" data-action="project-ongoing">正在进行</button>
+            <button class="home-card" data-action="project-completed">已完成</button>
           </div>
         </section>
 
@@ -93,9 +89,10 @@
               <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
               <button class="menu-item" data-panel="script-panel">脚本管理</button>
             </div>
-            <div class="menu is-hidden" data-menu="system-basic">
+            <div class="menu is-hidden" data-menu="system">
               <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
               <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
+              <button class="menu-item" data-panel="operation-log-panel">操作日志</button>
             </div>
             <button class="task-button" aria-label="任务日志">
               <span class="task-icon" aria-hidden="true">◎</span>
@@ -106,10 +103,13 @@
             <div class="panel active" id="topology-panel">
               <div class="content-header">
                 <div class="content-left">
-                  <button class="primary" id="site-upload-button">添加站点</button>
                   <h2 class="content-title">站点拓扑</h2>
+                  <button class="primary" id="site-upload-button">添加站点</button>
                 </div>
-                <button class="ghost" data-empty="true">导出拓扑</button>
+                <div class="content-actions">
+                  <button class="ghost" id="mark-complete-button">标记已完成</button>
+                  <button class="ghost" data-empty="true">导出拓扑</button>
+                </div>
               </div>
               <div class="canvas">
                 <div class="canvas-header">
@@ -162,6 +162,12 @@
                 </section>
               </div>
             </div>
+            <div class="panel" id="operation-log-panel">
+              <div class="content-header">
+                <h2 class="content-title">操作日志</h2>
+              </div>
+              <ul class="log-list" id="operation-log-list"></ul>
+            </div>
           </section>
         </div>
       </main>
@@ -179,56 +185,7 @@
             </svg>
           </button>
         </div>
-        <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
-          <div class="task-row task-header" role="row">
-            <span role="columnheader">任务名称</span>
-            <span role="columnheader">开始时间</span>
-            <span role="columnheader">进度</span>
-            <span role="columnheader">完成时间</span>
-            <span role="columnheader">结果</span>
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">主干链路巡检</span>
-            <span role="cell">18:55</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill danger" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">18:59</span>
-            <span
-              role="cell"
-              class="result failed"
-              data-tooltip="端口阻塞，自动回滚失败"
-              >失败</span
-            >
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">站点配置推送</span>
-            <span role="cell">16:20</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill success" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">16:22</span>
-            <span role="cell" class="result success">完成</span>
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">备份任务执行</span>
-            <span role="cell">11:14</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill success" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">11:21</span>
-            <span role="cell" class="result success">完成</span>
-          </div>
-        </div>
+        <div class="task-table" id="task-log-list" role="table" aria-label="最近任务"></div>
       </div>
     </div>
     <div class="toast" id="empty-toast" aria-hidden="true">无</div>
@@ -316,14 +273,20 @@
       const siteUploadButton = document.getElementById('site-upload-button');
       const siteFileInput = document.getElementById('site-file');
       const siteUploadSubmit = document.getElementById('site-upload-submit');
+      const markCompleteButton = document.getElementById('mark-complete-button');
       const modeToggle = document.getElementById('mode-toggle');
       const themeToggle = document.getElementById('theme-toggle');
       const themeGrid = document.getElementById('theme-grid');
       const modeChips = document.querySelectorAll('.mode-chip');
       const homeButton = document.getElementById('home-button');
       const homeCards = document.querySelectorAll('.home-card');
+      const taskLogList = document.getElementById('task-log-list');
+      const operationLogList = document.getElementById('operation-log-list');
       let toastTimer;
       let navCloseTimer;
+      let currentProjectId = null;
+      const projects = [];
+      const activityLogs = [];
 
       const themePresets = [
         {
@@ -461,6 +424,61 @@
         }
       };
 
+      const formatTime = (date) =>
+        date.toLocaleTimeString('zh-CN', {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+      const addActivityLog = (message) => {
+        activityLogs.unshift({
+          id: crypto.randomUUID(),
+          message,
+          time: formatTime(new Date()),
+        });
+        renderLogs();
+      };
+
+      const renderLogs = () => {
+        const logHtml = activityLogs
+          .map(
+            (log) => `
+              <div class="task-row" role="row">
+                <span role="cell">${log.message}</span>
+                <span role="cell">${log.time}</span>
+              </div>
+            `,
+          )
+          .join('');
+        if (taskLogList) {
+          taskLogList.innerHTML = `
+            <div class="task-row task-header" role="row">
+              <span role="columnheader">操作内容</span>
+              <span role="columnheader">时间</span>
+            </div>
+            ${logHtml || '<div class="task-row task-empty" role="row">暂无任务记录</div>'}
+          `;
+        }
+        if (operationLogList) {
+          operationLogList.innerHTML = activityLogs.length
+            ? activityLogs
+                .map((log) => `<li><strong>${log.message}</strong><span>${log.time}</span></li>`)
+                .join('')
+            : '<li class="empty">暂无操作日志</li>';
+        }
+      };
+
+      const getProjectByStatus = (status) =>
+        projects.find((project) => project.status === status) || null;
+
+      const selectProject = (project) => {
+        if (!project) {
+          return;
+        }
+        currentProjectId = project.id;
+        setSidebarTitle(project.name);
+      };
+
       const showMenuGroup = (menuKey) => {
         menuGroups.forEach((menu) => {
           menu.classList.toggle('is-hidden', menu.dataset.menu !== menuKey);
@@ -529,6 +547,7 @@
       applyTheme(themePresets[currentThemeIndex]);
       renderThemeCards();
       setHomeView(true);
+      renderLogs();
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
@@ -568,8 +587,9 @@
             panel.classList.toggle('active', panel.id === target);
           });
           if (parentMenu?.dataset.menu === 'project') {
-            setSidebarTitle('项目管理');
-          } else if (parentMenu?.dataset.menu === 'system-basic') {
+            const activeProject = projects.find((project) => project.id === currentProjectId);
+            setSidebarTitle(activeProject?.name || '项目管理');
+          } else if (parentMenu?.dataset.menu === 'system') {
             setSidebarTitle('系统管理');
           }
           setHomeView(false);
@@ -602,14 +622,18 @@
         item.addEventListener('click', () => {
           const action = item.dataset.action;
           if (action === 'new-project') {
-            setHomeView(false);
-            showMenuGroup('project');
-            setSidebarTitle('项目管理');
             projectModal.classList.add('open');
             projectModal.setAttribute('aria-hidden', 'false');
             projectInput.value = '';
             projectInput.focus();
-          } else if (action === 'project-home') {
+          } else if (action === 'project-ongoing' || action === 'project-completed') {
+            const status = action === 'project-completed' ? 'completed' : 'ongoing';
+            const targetProject = getProjectByStatus(status);
+            if (!targetProject) {
+              showToast('暂无符合条件的项目', item);
+              closeNavPanels();
+              return;
+            }
             setHomeView(false);
             showMenuGroup('project');
             const targetPanel = document.getElementById('topology-panel');
@@ -621,18 +645,34 @@
                 .querySelectorAll('.menu-item')
                 .forEach((button) => button.classList.toggle('active', button === defaultItem));
             }
-            setSidebarTitle('项目管理');
+            selectProject(targetProject);
+            addActivityLog(`进入项目：${targetProject.name}`);
           } else if (action === 'system-basic') {
             setHomeView(false);
-            showMenuGroup('system-basic');
+            showMenuGroup('system');
             const targetPanel = document.getElementById('timeout-panel');
             panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
-            const defaultItem = document.querySelector('[data-menu="system-basic"] .menu-item');
+            const defaultItem = document.querySelector('[data-menu="system"] .menu-item');
             if (defaultItem) {
               defaultItem
                 .closest('.menu')
                 .querySelectorAll('.menu-item')
                 .forEach((button) => button.classList.toggle('active', button === defaultItem));
+            }
+            setSidebarTitle('系统管理');
+          } else if (action === 'system-log') {
+            setHomeView(false);
+            showMenuGroup('system');
+            const targetPanel = document.getElementById('operation-log-panel');
+            panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
+            const logItem = document.querySelector(
+              '[data-menu="system"] .menu-item[data-panel="operation-log-panel"]',
+            );
+            if (logItem) {
+              logItem
+                .closest('.menu')
+                .querySelectorAll('.menu-item')
+                .forEach((button) => button.classList.toggle('active', button === logItem));
             }
             setSidebarTitle('系统管理');
           } else {
@@ -644,8 +684,31 @@
 
       projectSubmit.addEventListener('click', () => {
         const value = projectInput.value.trim();
+        if (!value) {
+          showToast('请输入项目名称', projectSubmit);
+          return;
+        }
+        const project = {
+          id: crypto.randomUUID(),
+          name: value,
+          status: 'ongoing',
+        };
+        projects.unshift(project);
+        selectProject(project);
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
+        showMenuGroup('project');
+        const targetPanel = document.getElementById('topology-panel');
+        panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
+        const defaultItem = document.querySelector('[data-menu="project"] .menu-item');
+        if (defaultItem) {
+          defaultItem
+            .closest('.menu')
+            .querySelectorAll('.menu-item')
+            .forEach((button) => button.classList.toggle('active', button === defaultItem));
+        }
+        setHomeView(false);
+        addActivityLog(`创建项目：${value}`);
       });
 
       siteUploadButton.addEventListener('click', () => {
@@ -666,7 +729,25 @@
         siteModal.classList.remove('open');
         siteModal.setAttribute('aria-hidden', 'true');
         showToast('站点信息已上传', siteUploadButton);
+        addActivityLog('添加站点信息');
       });
+
+      if (markCompleteButton) {
+        markCompleteButton.addEventListener('click', () => {
+          const activeProject = projects.find((project) => project.id === currentProjectId);
+          if (!activeProject) {
+            showToast('暂无项目可标记', markCompleteButton);
+            return;
+          }
+          if (activeProject.status === 'completed') {
+            showToast('项目已完成', markCompleteButton);
+            return;
+          }
+          activeProject.status = 'completed';
+          addActivityLog(`项目已完成：${activeProject.name}`);
+          showToast('已标记完成', markCompleteButton);
+        });
+      }
 
       modeToggle.addEventListener('click', () => {
         document.body.classList.toggle('theme-dark');
