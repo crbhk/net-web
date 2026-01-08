@@ -21,8 +21,12 @@
             <button class="tab active" data-menu="project-menu">项目管理</button>
             <div class="nav-panel" id="project-menu">
               <button class="nav-item" data-action="new-project">新建项目</button>
-              <button class="nav-item" data-action="project-home">正在进行</button>
-              <button class="nav-item" data-action="project-home">已完成</button>
+              <button class="nav-item" data-action="project-list" data-status="active">
+                正在进行
+              </button>
+              <button class="nav-item" data-action="project-list" data-status="completed">
+                已完成
+              </button>
             </div>
           </div>
           <div class="nav-group">
@@ -30,7 +34,7 @@
             <div class="nav-panel" id="system-menu">
               <button class="nav-item" data-action="system-basic">基本设置</button>
               <button class="nav-item">安全管理</button>
-              <button class="nav-item">操作日志</button>
+              <button class="nav-item" data-action="system-log">操作日志</button>
             </div>
           </div>
         </nav>
@@ -73,14 +77,14 @@
 
       <main class="main-area">
         <section class="home-view" id="home-view">
-          <div class="home-header">
-            <h2>项目管理</h2>
-            <p>请选择需要进入的功能</p>
-          </div>
           <div class="home-cards">
             <button class="home-card" data-action="new-project">新建项目</button>
-            <button class="home-card" data-action="project-home">正在进行</button>
-            <button class="home-card" data-action="project-home">已完成</button>
+            <button class="home-card" data-action="project-list" data-status="active">
+              正在进行
+            </button>
+            <button class="home-card" data-action="project-list" data-status="completed">
+              已完成
+            </button>
           </div>
         </section>
 
@@ -96,6 +100,7 @@
             <div class="menu is-hidden" data-menu="system-basic">
               <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
               <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
+              <button class="menu-item" data-panel="operation-log-panel">操作日志</button>
             </div>
             <button class="task-button" aria-label="任务日志">
               <span class="task-icon" aria-hidden="true">◎</span>
@@ -104,10 +109,10 @@
 
           <section class="content">
             <div class="panel active" id="topology-panel">
+              <h2 class="panel-title">站点拓扑</h2>
               <div class="content-header">
                 <div class="content-left">
                   <button class="primary" id="site-upload-button">添加站点</button>
-                  <h2 class="content-title">站点拓扑</h2>
                 </div>
                 <button class="ghost" data-empty="true">导出拓扑</button>
               </div>
@@ -162,6 +167,14 @@
                 </section>
               </div>
             </div>
+            <div class="panel" id="operation-log-panel">
+              <div class="content-header">
+                <h2 class="content-title">操作日志</h2>
+              </div>
+              <div class="log-card">
+                <div class="log-list" id="operation-log-list" role="list"></div>
+              </div>
+            </div>
           </section>
         </div>
       </main>
@@ -181,52 +194,9 @@
         </div>
         <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
           <div class="task-row task-header" role="row">
-            <span role="columnheader">任务名称</span>
-            <span role="columnheader">开始时间</span>
-            <span role="columnheader">进度</span>
-            <span role="columnheader">完成时间</span>
+            <span role="columnheader">操作内容</span>
+            <span role="columnheader">时间</span>
             <span role="columnheader">结果</span>
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">主干链路巡检</span>
-            <span role="cell">18:55</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill danger" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">18:59</span>
-            <span
-              role="cell"
-              class="result failed"
-              data-tooltip="端口阻塞，自动回滚失败"
-              >失败</span
-            >
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">站点配置推送</span>
-            <span role="cell">16:20</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill success" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">16:22</span>
-            <span role="cell" class="result success">完成</span>
-          </div>
-          <div class="task-row" role="row">
-            <span role="cell">备份任务执行</span>
-            <span role="cell">11:14</span>
-            <span role="cell">
-              <span class="progress">
-                <span class="progress-fill success" style="--progress: 100%"></span>
-              </span>
-              <span class="progress-text">100%</span>
-            </span>
-            <span role="cell">11:21</span>
-            <span role="cell" class="result success">完成</span>
           </div>
         </div>
       </div>
@@ -305,6 +275,8 @@
       const panels = document.querySelectorAll('.panel');
       const taskButton = document.querySelector('.task-button');
       const taskModal = document.getElementById('task-modal');
+      const taskLogList = document.getElementById('task-log-list');
+      const operationLogList = document.getElementById('operation-log-list');
       const emptyToast = document.getElementById('empty-toast');
       const versionButton = document.getElementById('version-button');
       const versionModal = document.getElementById('version-modal');
@@ -324,6 +296,9 @@
       const homeCards = document.querySelectorAll('.home-card');
       let toastTimer;
       let navCloseTimer;
+      const projects = [];
+      const taskLogs = [];
+      let activeProject = null;
 
       const themePresets = [
         {
@@ -461,6 +436,136 @@
         }
       };
 
+      const formatTime = (date) =>
+        date.toLocaleString('zh-CN', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
+      const formatShortTime = (date) =>
+        date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+
+      const renderTaskLogs = () => {
+        if (!taskLogList) {
+          return;
+        }
+        taskLogList
+          .querySelectorAll('.task-row:not(.task-header)')
+          .forEach((row) => row.remove());
+
+        if (!taskLogs.length) {
+          const emptyRow = document.createElement('div');
+          emptyRow.className = 'task-row task-empty';
+          emptyRow.setAttribute('role', 'row');
+          emptyRow.innerHTML = `
+            <span role="cell">暂无记录</span>
+            <span role="cell">--</span>
+            <span role="cell" class="result">--</span>
+          `;
+          taskLogList.appendChild(emptyRow);
+          return;
+        }
+
+        taskLogs.forEach((log) => {
+          const row = document.createElement('div');
+          row.className = 'task-row';
+          row.setAttribute('role', 'row');
+          row.innerHTML = `
+            <span role="cell">${log.message}</span>
+            <span role="cell">${log.shortTime}</span>
+            <span role="cell" class="result success">${log.result}</span>
+          `;
+          taskLogList.appendChild(row);
+        });
+      };
+
+      const renderOperationLogs = () => {
+        if (!operationLogList) {
+          return;
+        }
+        operationLogList.innerHTML = '';
+        if (!taskLogs.length) {
+          const emptyItem = document.createElement('div');
+          emptyItem.className = 'log-item empty';
+          emptyItem.textContent = '暂无操作记录';
+          operationLogList.appendChild(emptyItem);
+          return;
+        }
+        taskLogs.forEach((log) => {
+          const item = document.createElement('div');
+          item.className = 'log-item';
+          item.innerHTML = `
+            <span class="log-message">${log.message}</span>
+            <span class="log-time">${log.time}</span>
+          `;
+          operationLogList.appendChild(item);
+        });
+      };
+
+      const addTaskLog = (message) => {
+        const now = new Date();
+        taskLogs.unshift({
+          message,
+          time: formatTime(now),
+          shortTime: formatShortTime(now),
+          result: '完成',
+        });
+        renderTaskLogs();
+        renderOperationLogs();
+      };
+
+      const setActivePanel = (panelId, menuKey) => {
+        if (menuKey) {
+          showMenuGroup(menuKey);
+        }
+        panels.forEach((panel) => panel.classList.toggle('active', panel.id === panelId));
+        if (menuKey) {
+          const activeButton = document.querySelector(
+            `[data-menu="${menuKey}"] .menu-item[data-panel="${panelId}"]`,
+          );
+          if (activeButton) {
+            activeButton
+              .closest('.menu')
+              .querySelectorAll('.menu-item')
+              .forEach((button) =>
+                button.classList.toggle('active', button === activeButton),
+              );
+          }
+        }
+      };
+
+      const enterProjectManagement = (project) => {
+        if (!project) {
+          return;
+        }
+        activeProject = project;
+        setHomeView(false);
+        setSidebarTitle(project.name);
+        setActivePanel('topology-panel', 'project');
+      };
+
+      const getProjectsByStatus = (status) =>
+        projects.filter((project) => project.status === status);
+
+      const openProjectList = (status, anchor) => {
+        const list = getProjectsByStatus(status);
+        if (!list.length) {
+          showToast(status === 'completed' ? '暂无已完成项目' : '暂无正在进行项目', anchor);
+          return;
+        }
+        enterProjectManagement(list[0]);
+      };
+
+      const openProjectModal = () => {
+        projectModal.classList.add('open');
+        projectModal.setAttribute('aria-hidden', 'false');
+        projectInput.value = '';
+        projectInput.focus();
+      };
+
       const showMenuGroup = (menuKey) => {
         menuGroups.forEach((menu) => {
           menu.classList.toggle('is-hidden', menu.dataset.menu !== menuKey);
@@ -528,6 +633,8 @@
 
       applyTheme(themePresets[currentThemeIndex]);
       renderThemeCards();
+      renderTaskLogs();
+      renderOperationLogs();
       setHomeView(true);
 
       navTabs.forEach((tab) => {
@@ -559,6 +666,10 @@
         item.addEventListener('click', () => {
           const target = item.dataset.panel;
           const parentMenu = item.closest('.menu');
+          if (parentMenu?.dataset.menu === 'project' && !activeProject) {
+            showToast('暂无可进入的项目', item);
+            return;
+          }
           if (parentMenu) {
             parentMenu
               .querySelectorAll('.menu-item')
@@ -568,7 +679,7 @@
             panel.classList.toggle('active', panel.id === target);
           });
           if (parentMenu?.dataset.menu === 'project') {
-            setSidebarTitle('项目管理');
+            setSidebarTitle(activeProject ? activeProject.name : '项目管理');
           } else if (parentMenu?.dataset.menu === 'system-basic') {
             setSidebarTitle('系统管理');
           }
@@ -601,40 +712,19 @@
       document.querySelectorAll('.nav-item').forEach((item) => {
         item.addEventListener('click', () => {
           const action = item.dataset.action;
+          const status = item.dataset.status;
           if (action === 'new-project') {
-            setHomeView(false);
-            showMenuGroup('project');
-            setSidebarTitle('项目管理');
-            projectModal.classList.add('open');
-            projectModal.setAttribute('aria-hidden', 'false');
-            projectInput.value = '';
-            projectInput.focus();
-          } else if (action === 'project-home') {
-            setHomeView(false);
-            showMenuGroup('project');
-            const targetPanel = document.getElementById('topology-panel');
-            panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
-            const defaultItem = document.querySelector('[data-menu="project"] .menu-item');
-            if (defaultItem) {
-              defaultItem
-                .closest('.menu')
-                .querySelectorAll('.menu-item')
-                .forEach((button) => button.classList.toggle('active', button === defaultItem));
-            }
-            setSidebarTitle('项目管理');
+            openProjectModal();
+          } else if (action === 'project-list') {
+            openProjectList(status, item);
           } else if (action === 'system-basic') {
             setHomeView(false);
-            showMenuGroup('system-basic');
-            const targetPanel = document.getElementById('timeout-panel');
-            panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
-            const defaultItem = document.querySelector('[data-menu="system-basic"] .menu-item');
-            if (defaultItem) {
-              defaultItem
-                .closest('.menu')
-                .querySelectorAll('.menu-item')
-                .forEach((button) => button.classList.toggle('active', button === defaultItem));
-            }
             setSidebarTitle('系统管理');
+            setActivePanel('timeout-panel', 'system-basic');
+          } else if (action === 'system-log') {
+            setHomeView(false);
+            setSidebarTitle('系统管理');
+            setActivePanel('operation-log-panel', 'system-basic');
           } else {
             showToast('无', item);
           }
@@ -644,8 +734,20 @@
 
       projectSubmit.addEventListener('click', () => {
         const value = projectInput.value.trim();
+        if (!value) {
+          showToast('请输入项目名称', projectSubmit);
+          projectInput.focus();
+          return;
+        }
+        const project = {
+          name: value,
+          status: 'active',
+        };
+        projects.unshift(project);
+        addTaskLog(`创建项目：${value}`);
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
+        enterProjectManagement(project);
       });
 
       siteUploadButton.addEventListener('click', () => {
@@ -666,6 +768,7 @@
         siteModal.classList.remove('open');
         siteModal.setAttribute('aria-hidden', 'true');
         showToast('站点信息已上传', siteUploadButton);
+        addTaskLog('添加站点信息');
       });
 
       modeToggle.addEventListener('click', () => {
@@ -680,6 +783,7 @@
               (chip.dataset.mode === 'light' && !isDarkMode),
           );
         });
+        addTaskLog('切换明暗模式');
       });
 
       themeToggle.addEventListener('click', () => {
@@ -687,6 +791,7 @@
         showToast('主题已切换', themeToggle);
         updateThemeSelection();
         updateThemePreviews();
+        addTaskLog('切换主题');
       });
 
       if (themeGrid) {
@@ -699,6 +804,8 @@
           applyTheme(themePresets[currentThemeIndex]);
           updateThemeSelection();
           showToast('主题已切换', card);
+          updateThemePreviews();
+          addTaskLog('切换主题');
         });
       }
 
@@ -708,6 +815,7 @@
           applyTheme(themePresets[currentThemeIndex]);
           updateThemePreviews();
           modeChips.forEach((item) => item.classList.toggle('active', item === chip));
+          addTaskLog('切换明暗模式');
         });
       });
 
@@ -750,9 +858,11 @@
       homeCards.forEach((card) => {
         card.addEventListener('click', () => {
           const action = card.dataset.action;
-          const trigger = document.querySelector(`.nav-item[data-action="${action}"]`);
-          if (trigger) {
-            trigger.click();
+          const status = card.dataset.status;
+          if (action === 'new-project') {
+            openProjectModal();
+          } else if (action === 'project-list') {
+            openProjectList(status, card);
           }
         });
       });
