@@ -39,7 +39,7 @@
             <button class="icon-button" id="version-button" aria-label="版本信息">
               <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
                 <path
-                  d="M6.5 3.8h11a2 2 0 0 1 2 2v12.4a2 2 0 0 1-2 2h-11a2 2 0 0 1-2-2V5.8a2 2 0 0 1 2-2Zm1.1 3.3h8.8v2.2H7.6V7.1Zm0 5h8.8v2.2H7.6v-2.2Zm0 4.9h5.2v2.1H7.6v-2.1Z"
+                  d="M12 3.4c-4.8 0-8.6 3.8-8.6 8.6s3.8 8.6 8.6 8.6 8.6-3.8 8.6-8.6-3.8-8.6-8.6-8.6Zm0 4.2c.6 0 1 .5.9 1.1l-.6 5.2a.4.4 0 0 1-.8 0l-.6-5.2c-.1-.6.3-1.1.9-1.1Zm0 9.7a1.2 1.2 0 1 1 0-2.4 1.2 1.2 0 0 1 0 2.4Z"
                 />
               </svg>
             </button>
@@ -50,17 +50,17 @@
                 />
               </svg>
             </button>
-            <button class="icon-button" aria-label="明暗切换">
+            <button class="icon-button" id="mode-toggle" aria-label="明暗切换">
               <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
                 <path
                   d="M12 3.4a8.6 8.6 0 1 1-6.1 2.5 8.6 8.6 0 0 1 6.1-2.5Zm0 2a6.6 6.6 0 1 0 0 13.2V5.4Z"
                 />
               </svg>
             </button>
-            <button class="icon-button" aria-label="主题切换">
+            <button class="icon-button" id="theme-toggle" aria-label="主题切换">
               <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
                 <path
-                  d="M6 4.5h12a1.5 1.5 0 0 1 1.5 1.5v7.2a1.5 1.5 0 0 1-1.5 1.5H9.6l-3.1 3.2V6A1.5 1.5 0 0 1 6 4.5Zm6 3.3a3.6 3.6 0 1 0 0 7.2 3.6 3.6 0 0 0 0-7.2Z"
+                  d="M5.4 6.1A1.7 1.7 0 0 1 7.1 4.4h9.8a1.7 1.7 0 0 1 1.7 1.7v9.8a1.7 1.7 0 0 1-1.7 1.7H7.1a1.7 1.7 0 0 1-1.7-1.7V6.1Zm1.9.6v8.6h9.3V6.7H7.3Zm2.1 6.9 2.4-3 1.9 2.2 1.4-1.6 1.8 2.4H9.4Z"
                 />
               </svg>
             </button>
@@ -88,6 +88,7 @@
             <div class="content-header">
               <h2 class="content-title">添加站点</h2>
               <div class="content-actions">
+                <button class="primary" id="site-upload-button">添加站点</button>
                 <button class="ghost" data-empty="true">导出拓扑</button>
               </div>
             </div>
@@ -117,7 +118,7 @@
     </div>
 
     <div class="modal task-popover" id="task-modal" aria-hidden="true">
-      <div class="modal-card">
+      <div class="modal-card task-card">
         <div class="modal-header">
           <h3>最近任务日志</h3>
           <button class="icon-button" data-close="task-modal" aria-label="关闭">
@@ -128,16 +129,61 @@
             </svg>
           </button>
         </div>
-        <ul class="log-list" id="task-log-list">
-          <li>09:21 脚本部署完成 · 成功</li>
-          <li>09:05 拓扑同步完成 · 成功</li>
-          <li>08:40 设备巡检完成 · 无告警</li>
-        </ul>
+        <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
+          <div class="task-row task-header" role="row">
+            <span role="columnheader">任务名称</span>
+            <span role="columnheader">开始时间</span>
+            <span role="columnheader">进度</span>
+            <span role="columnheader">完成时间</span>
+            <span role="columnheader">结果</span>
+          </div>
+          <div class="task-row" role="row">
+            <span role="cell">主干链路巡检</span>
+            <span role="cell">18:55</span>
+            <span role="cell">
+              <span class="progress">
+                <span class="progress-fill danger" style="--progress: 100%"></span>
+              </span>
+              <span class="progress-text">100%</span>
+            </span>
+            <span role="cell">18:59</span>
+            <span
+              role="cell"
+              class="result failed"
+              data-tooltip="端口阻塞，自动回滚失败"
+              >失败</span
+            >
+          </div>
+          <div class="task-row" role="row">
+            <span role="cell">站点配置推送</span>
+            <span role="cell">16:20</span>
+            <span role="cell">
+              <span class="progress">
+                <span class="progress-fill success" style="--progress: 100%"></span>
+              </span>
+              <span class="progress-text">100%</span>
+            </span>
+            <span role="cell">16:22</span>
+            <span role="cell" class="result success">完成</span>
+          </div>
+          <div class="task-row" role="row">
+            <span role="cell">备份任务执行</span>
+            <span role="cell">11:14</span>
+            <span role="cell">
+              <span class="progress">
+                <span class="progress-fill success" style="--progress: 100%"></span>
+              </span>
+              <span class="progress-text">100%</span>
+            </span>
+            <span role="cell">11:21</span>
+            <span role="cell" class="result success">完成</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="toast" id="empty-toast" aria-hidden="true">无</div>
 
-    <div class="modal" id="version-modal" aria-hidden="true">
+    <div class="modal version-modal" id="version-modal" aria-hidden="true">
       <div class="modal-card">
         <div class="modal-header">
           <h3>版本信息</h3>
@@ -173,6 +219,30 @@
       </div>
     </div>
 
+    <div class="modal" id="site-modal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>上传站点信息</h3>
+          <button class="icon-button" data-close="site-modal" aria-label="关闭">
+            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+              <path
+                d="M6.7 6.7a.8.8 0 0 1 1.1 0L12 11l4.2-4.3a.8.8 0 0 1 1.1 1.1L13.1 12l4.2 4.2a.8.8 0 0 1-1.1 1.1L12 13.1l-4.2 4.2a.8.8 0 0 1-1.1-1.1L10.9 12 6.7 7.8a.8.8 0 0 1 0-1.1Z"
+              />
+            </svg>
+          </button>
+        </div>
+        <label class="field">
+          <span>选择本地文件（仅支持 Excel）</span>
+          <input
+            type="file"
+            id="site-file"
+            accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          />
+        </label>
+        <button class="primary" id="site-upload-submit" disabled>上传</button>
+      </div>
+    </div>
+
     <script>
       const navTabs = document.querySelectorAll('.tab');
       const navPanels = document.querySelectorAll('.nav-panel');
@@ -189,13 +259,94 @@
       const projectInput = document.getElementById('project-input');
       const projectSubmit = document.getElementById('project-submit');
       const projectName = document.getElementById('project-name');
+      const siteModal = document.getElementById('site-modal');
+      const siteUploadButton = document.getElementById('site-upload-button');
+      const siteFileInput = document.getElementById('site-file');
+      const siteUploadSubmit = document.getElementById('site-upload-submit');
+      const modeToggle = document.getElementById('mode-toggle');
+      const themeToggle = document.getElementById('theme-toggle');
       let toastTimer;
       let navCloseTimer;
 
-      const showEmptyToast = (anchor) => {
+      const themePresets = [
+        {
+          name: '星河蓝',
+          background: 'radial-gradient(circle at top, #ffffff 0%, #e7f2ff 42%, #d2e7ff 100%)',
+          accent: '#1d6dff',
+          accentSoft: 'rgba(29, 109, 255, 0.16)',
+          brand: 'linear-gradient(135deg, #5ac8fa, #1d6dff)',
+        },
+        {
+          name: '霞光橙',
+          background: 'radial-gradient(circle at top, #fff6ef 0%, #ffe2cc 45%, #ffd1b8 100%)',
+          accent: '#f97316',
+          accentSoft: 'rgba(249, 115, 22, 0.18)',
+          brand: 'linear-gradient(135deg, #ff9a62, #f97316)',
+        },
+        {
+          name: '薄荷绿',
+          background: 'radial-gradient(circle at top, #f0fff7 0%, #d7f7e9 45%, #c0f0dd 100%)',
+          accent: '#14b8a6',
+          accentSoft: 'rgba(20, 184, 166, 0.18)',
+          brand: 'linear-gradient(135deg, #6ee7b7, #14b8a6)',
+        },
+        {
+          name: '夜雾紫',
+          background: 'radial-gradient(circle at top, #f7f4ff 0%, #e3d9ff 45%, #d3c4ff 100%)',
+          accent: '#7c3aed',
+          accentSoft: 'rgba(124, 58, 237, 0.18)',
+          brand: 'linear-gradient(135deg, #c4b5fd, #7c3aed)',
+        },
+        {
+          name: '晨曦粉',
+          background: 'radial-gradient(circle at top, #fff5f8 0%, #ffdbe7 45%, #ffc5d8 100%)',
+          accent: '#ec4899',
+          accentSoft: 'rgba(236, 72, 153, 0.18)',
+          brand: 'linear-gradient(135deg, #f9a8d4, #ec4899)',
+        },
+        {
+          name: '海盐青',
+          background: 'radial-gradient(circle at top, #f2ffff 0%, #d9f5f7 45%, #c2ebee 100%)',
+          accent: '#0ea5a4',
+          accentSoft: 'rgba(14, 165, 164, 0.18)',
+          brand: 'linear-gradient(135deg, #7dd3fc, #0ea5a4)',
+        },
+        {
+          name: '金砂',
+          background: 'radial-gradient(circle at top, #fffaf0 0%, #ffe7c4 45%, #ffd89b 100%)',
+          accent: '#f59e0b',
+          accentSoft: 'rgba(245, 158, 11, 0.2)',
+          brand: 'linear-gradient(135deg, #fcd34d, #f59e0b)',
+        },
+        {
+          name: '暮霭灰蓝',
+          background: 'radial-gradient(circle at top, #f4f7ff 0%, #dfe7f5 45%, #cdd8ed 100%)',
+          accent: '#3b82f6',
+          accentSoft: 'rgba(59, 130, 246, 0.18)',
+          brand: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
+        },
+        {
+          name: '琥珀茶',
+          background: 'radial-gradient(circle at top, #fff8f2 0%, #ffe3cf 45%, #ffd2b2 100%)',
+          accent: '#ea580c',
+          accentSoft: 'rgba(234, 88, 12, 0.18)',
+          brand: 'linear-gradient(135deg, #fdba74, #ea580c)',
+        },
+        {
+          name: '青黛',
+          background: 'radial-gradient(circle at top, #f4f7ff 0%, #d6e2ff 45%, #bdd1ff 100%)',
+          accent: '#2563eb',
+          accentSoft: 'rgba(37, 99, 235, 0.18)',
+          brand: 'linear-gradient(135deg, #93c5fd, #2563eb)',
+        },
+      ];
+      let currentThemeIndex = 0;
+
+      const showToast = (message, anchor) => {
         if (!emptyToast) {
           return;
         }
+        emptyToast.textContent = message;
         const rect = anchor.getBoundingClientRect();
         emptyToast.style.left = `${rect.left + rect.width / 2}px`;
         emptyToast.style.top = `${rect.bottom + 12}px`;
@@ -212,6 +363,25 @@
         navTabs.forEach((btn) => btn.classList.remove('active'));
         navPanels.forEach((panel) => panel.classList.remove('open'));
       };
+
+      const applyTheme = (theme) => {
+        const root = document.documentElement;
+        root.style.setProperty('--page-bg', theme.background);
+        root.style.setProperty('--accent', theme.accent);
+        root.style.setProperty('--accent-soft', theme.accentSoft);
+        root.style.setProperty('--brand-gradient', theme.brand);
+      };
+
+      const randomTheme = () => {
+        let nextIndex = currentThemeIndex;
+        while (nextIndex === currentThemeIndex) {
+          nextIndex = Math.floor(Math.random() * themePresets.length);
+        }
+        currentThemeIndex = nextIndex;
+        applyTheme(themePresets[currentThemeIndex]);
+      };
+
+      applyTheme(themePresets[currentThemeIndex]);
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
@@ -251,11 +421,6 @@
       taskButton.addEventListener('click', () => {
         taskModal.classList.add('open');
         taskModal.setAttribute('aria-hidden', 'false');
-        if (!taskLogList.children.length) {
-          const emptyItem = document.createElement('li');
-          emptyItem.textContent = '无';
-          taskLogList.appendChild(emptyItem);
-        }
         const rect = taskButton.getBoundingClientRect();
         const maxHeight = Math.min(window.innerHeight * 0.5, taskCard.scrollHeight);
         const rightPadding = 24;
@@ -288,7 +453,7 @@
             projectInput.value = '';
             projectInput.focus();
           } else {
-            showEmptyToast(item);
+            showToast('无', item);
           }
           closeNavPanels();
         });
@@ -303,9 +468,38 @@
         projectModal.setAttribute('aria-hidden', 'true');
       });
 
+      siteUploadButton.addEventListener('click', () => {
+        siteModal.classList.add('open');
+        siteModal.setAttribute('aria-hidden', 'false');
+        siteFileInput.value = '';
+        siteUploadSubmit.disabled = true;
+      });
+
+      siteFileInput.addEventListener('change', () => {
+        siteUploadSubmit.disabled = !siteFileInput.files.length;
+      });
+
+      siteUploadSubmit.addEventListener('click', () => {
+        if (!siteFileInput.files.length) {
+          return;
+        }
+        siteModal.classList.remove('open');
+        siteModal.setAttribute('aria-hidden', 'true');
+        showToast('站点信息已上传', siteUploadButton);
+      });
+
+      modeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('theme-dark');
+      });
+
+      themeToggle.addEventListener('click', () => {
+        randomTheme();
+        showToast('主题已切换', themeToggle);
+      });
+
       document.querySelectorAll('[data-empty="true"]').forEach((button) => {
         button.addEventListener('click', () => {
-          showEmptyToast(button);
+          showToast('无', button);
         });
       });
 
