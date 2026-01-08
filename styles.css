@@ -1,14 +1,17 @@
 :root {
   color-scheme: light;
   --bg: #f4f5f7;
-  --surface: rgba(255, 255, 255, 0.9);
-  --surface-strong: #ffffff;
+  --surface: rgba(255, 255, 255, 0.72);
+  --surface-strong: rgba(255, 255, 255, 0.92);
   --text: #1d1d1f;
   --muted: #6e6e73;
   --accent: #007aff;
   --accent-soft: rgba(0, 122, 255, 0.12);
   --border: rgba(60, 60, 67, 0.16);
-  --shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+  --shadow: 0 24px 70px rgba(12, 18, 32, 0.14);
+  --shadow-soft: 0 10px 30px rgba(25, 31, 44, 0.08);
+  --glow: 0 0 0 1px rgba(255, 255, 255, 0.6) inset,
+    0 10px 30px rgba(0, 0, 0, 0.08);
   font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
     "Segoe UI", sans-serif;
 }
@@ -30,8 +33,16 @@ input {
   font: inherit;
 }
 
+html,
+body {
+  height: 100%;
+}
+
 .app {
+  min-height: 100vh;
   padding: 28px 32px 40px;
+  display: flex;
+  flex-direction: column;
 }
 
 .top-bar {
@@ -44,7 +55,9 @@ input {
   padding: 16px 24px;
   box-shadow: var(--shadow);
   border: 1px solid rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(26px);
+  position: relative;
+  z-index: 20;
 }
 
 .brand {
@@ -77,6 +90,8 @@ input {
 .nav {
   display: flex;
   gap: 16px;
+  flex: 1;
+  justify-content: center;
 }
 
 .nav-group {
@@ -84,25 +99,27 @@ input {
 }
 
 .tab {
-  border: 1px solid var(--border);
-  background: var(--surface-strong);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(235, 240, 247, 0.9));
   padding: 8px 20px;
   border-radius: 12px;
   color: var(--text);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: var(--glow);
 }
 
 .tab.active {
   border-color: rgba(0, 122, 255, 0.4);
-  box-shadow: 0 8px 18px rgba(0, 122, 255, 0.18);
+  box-shadow: 0 12px 24px rgba(0, 122, 255, 0.24);
 }
 
 .nav-panel {
   position: absolute;
   top: calc(100% + 12px);
-  left: 0;
+  left: 50%;
+  transform: translate(-50%, -8px);
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 16px;
@@ -113,25 +130,26 @@ input {
   min-width: 180px;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-8px);
   transition: all 0.2s ease;
-  z-index: 5;
+  z-index: 30;
+  text-align: center;
 }
 
 .nav-panel.open {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 .nav-item {
   border: none;
-  background: #f5f5f7;
+  background: rgba(246, 248, 252, 0.9);
   padding: 10px 12px;
   border-radius: 12px;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
   font-size: 13px;
+  box-shadow: var(--shadow-soft);
 }
 
 .nav-item:hover {
@@ -143,50 +161,43 @@ input {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-
-.icon-button,
-.user-button {
-  border: none;
-  background: transparent;
-  cursor: pointer;
+  flex-direction: column;
 }
 
 .icon-button {
-  border: 1px solid var(--border);
-  background: var(--surface-strong);
-  width: 36px;
-  height: 36px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(225, 232, 243, 0.9));
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: grid;
   place-items: center;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 12px 24px rgba(10, 16, 26, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.user-button {
-  display: grid;
-  gap: 6px;
+.icon-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(10, 16, 26, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.action-row {
+  display: flex;
   align-items: center;
-  justify-items: center;
-  padding: 4px 8px;
+  gap: 12px;
 }
 
-.user-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: var(--surface-strong);
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+.user-icon-button {
+  order: 0;
 }
 
 .user-icon svg,
 .icon-button svg {
   width: 18px;
   height: 18px;
-  fill: #5c5c5f;
+  fill: #3c3c43;
+  filter: drop-shadow(0 1px 0 rgba(255, 255, 255, 0.7));
 }
 
 .user-name {
@@ -200,6 +211,9 @@ input {
   grid-template-columns: 260px 1fr;
   gap: 24px;
   margin-top: 24px;
+  flex: 1;
+  align-items: stretch;
+  min-height: 0;
 }
 
 .sidebar {
@@ -229,12 +243,13 @@ input {
   border: none;
   padding: 12px 14px;
   border-radius: 14px;
-  background: #f5f5f7;
+  background: rgba(246, 248, 252, 0.85);
   text-align: left;
   font-size: 13px;
   color: var(--text);
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: var(--shadow-soft);
 }
 
 .menu-item.active {
@@ -249,12 +264,12 @@ input {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--surface-strong);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(235, 240, 248, 0.9));
   display: grid;
   place-items: center;
   cursor: pointer;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--glow);
 }
 
 .task-icon {
@@ -264,13 +279,25 @@ input {
 
 .primary {
   border: none;
-  background: var(--accent);
+  background: linear-gradient(180deg, #4aa3ff, #0066ff);
   color: #fff;
   padding: 10px 16px;
   border-radius: 12px;
   font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 10px 24px rgba(0, 122, 255, 0.25);
+  box-shadow: 0 12px 26px rgba(0, 102, 255, 0.35);
+}
+
+.ghost {
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.7);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  backdrop-filter: blur(18px);
 }
 
 .content {
@@ -282,13 +309,17 @@ input {
   display: flex;
   flex-direction: column;
   gap: 24px;
-  min-height: 520px;
+  min-height: 0;
+  flex: 1;
+  backdrop-filter: blur(26px);
 }
 
 .panel {
   display: none;
   flex-direction: column;
   gap: 24px;
+  flex: 1;
+  min-height: 0;
 }
 
 .panel.active {
@@ -298,18 +329,31 @@ input {
 .content-header {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.content-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.content-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .canvas {
-  background: #f5f6f8;
+  background: rgba(245, 246, 248, 0.9);
   border-radius: 22px;
   padding: 18px;
   border: 1px dashed rgba(60, 60, 67, 0.25);
-  min-height: 360px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  flex: 1;
+  min-height: 0;
 }
 
 .canvas-header {
@@ -361,7 +405,7 @@ input {
 }
 
 .empty-state {
-  background: #f5f6f8;
+  background: rgba(245, 246, 248, 0.9);
   border-radius: 22px;
   padding: 40px;
   border: 1px dashed rgba(60, 60, 67, 0.25);
@@ -410,6 +454,49 @@ input {
   gap: 8px;
 }
 
+.task-popover {
+  background: transparent;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+}
+
+.task-popover .modal-card {
+  position: fixed;
+  max-height: 50vh;
+  overflow: auto;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(20px);
+  transform: translate(-12px, 12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: bottom left;
+}
+
+.task-popover.open .modal-card {
+  transform: translate(0, 0) scale(1);
+  opacity: 1;
+}
+
+.toast {
+  position: fixed;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(40, 40, 45, 0.85);
+  color: #fff;
+  font-size: 12px;
+  transform: translate(-50%, 0);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 12;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, -4px);
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -424,6 +511,12 @@ input {
   background: #f5f6f8;
 }
 
+.version-text {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+}
+
 @media (max-width: 960px) {
   .top-bar {
     flex-direction: column;
@@ -436,7 +529,7 @@ input {
 
   .actions {
     width: 100%;
-    justify-content: flex-end;
+    align-items: flex-end;
   }
 
   .nav {
