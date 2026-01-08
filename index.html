@@ -28,7 +28,8 @@
           <div class="nav-group">
             <button class="tab" data-menu="system-menu">系统管理</button>
             <div class="nav-panel" id="system-menu">
-              <button class="nav-item">基本设置</button>
+              <button class="nav-item" data-action="system-base">基本设置</button>
+              <button class="nav-item" data-action="system-theme">系统主题</button>
               <button class="nav-item">安全管理</button>
               <button class="nav-item">操作日志</button>
             </div>
@@ -43,13 +44,16 @@
                 />
               </svg>
             </button>
-            <button class="icon-button user-icon-button" aria-label="用户">
-              <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                <path
-                  d="M12 12.5c2.4 0 4.4-2 4.4-4.4S14.4 3.7 12 3.7 7.6 5.7 7.6 8.1 9.6 12.5 12 12.5Zm0 2.1c-4 0-7.4 2.1-7.4 4.6 0 .7.6 1.1 1.3 1.1h12.2c.7 0 1.3-.4 1.3-1.1 0-2.5-3.4-4.6-7.4-4.6Z"
-                />
-              </svg>
-            </button>
+            <div class="user-block">
+              <button class="icon-button user-icon-button" aria-label="用户">
+                <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                  <path
+                    d="M12 12.5c2.4 0 4.4-2 4.4-4.4S14.4 3.7 12 3.7 7.6 5.7 7.6 8.1 9.6 12.5 12 12.5Zm0 2.1c-4 0-7.4 2.1-7.4 4.6 0 .7.6 1.1 1.3 1.1h12.2c.7 0 1.3-.4 1.3-1.1 0-2.5-3.4-4.6-7.4-4.6Z"
+                  />
+                </svg>
+              </button>
+              <span class="user-name">Admin</span>
+            </div>
             <button class="icon-button" id="mode-toggle" aria-label="明暗切换">
               <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
                 <path
@@ -65,7 +69,6 @@
               </svg>
             </button>
           </div>
-          <span class="user-name">Admin</span>
         </div>
       </header>
 
@@ -74,9 +77,20 @@
           <div class="sidebar-header">
             <h2 id="project-name">项目名称</h2>
           </div>
-          <div class="menu">
+          <div class="menu menu-project">
             <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
             <button class="menu-item" data-panel="script-panel">脚本管理</button>
+          </div>
+          <div class="menu menu-system" hidden>
+            <button class="menu-item active" data-panel="system-base-panel">基本设置</button>
+            <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
+          </div>
+          <div class="menu menu-system-base" hidden>
+            <button class="menu-item active" data-panel="system-base-panel">超时时间</button>
+          </div>
+          <div class="menu menu-system-theme" hidden>
+            <button class="menu-item active" data-section="theme-mode">明暗调节</button>
+            <button class="menu-item" data-section="theme-presets">主题调节</button>
           </div>
           <button class="task-button" aria-label="任务日志">
             <span class="task-icon" aria-hidden="true">◎</span>
@@ -86,9 +100,11 @@
         <section class="content">
           <div class="panel active" id="topology-panel">
             <div class="content-header">
-              <h2 class="content-title">添加站点</h2>
-              <div class="content-actions">
+              <div class="content-header-left">
                 <button class="primary" id="site-upload-button">添加站点</button>
+                <h2 class="content-title">添加站点</h2>
+              </div>
+              <div class="content-actions">
                 <button class="ghost" data-empty="true">导出拓扑</button>
               </div>
             </div>
@@ -111,6 +127,40 @@
               <div class="placeholder-icon">◎</div>
               <p>脚本管理视图</p>
               <span>选择左侧菜单以查看脚本内容</span>
+            </div>
+          </div>
+          <div class="panel" id="system-base-panel">
+            <div class="content-header">
+              <h2 class="content-title">系统管理 / 基本设置</h2>
+            </div>
+            <div class="settings-card" id="timeout-panel">
+              <div class="settings-title">超时时间</div>
+              <p class="settings-desc">修改系统自动退出当前账号的超时时间（分钟）。</p>
+              <label class="field field-inline">
+                <span>超时时间</span>
+                <div class="input-unit">
+                  <input type="number" value="999" min="1" />
+                  <span>分钟</span>
+                </div>
+              </label>
+            </div>
+          </div>
+          <div class="panel" id="system-theme-panel">
+            <div class="content-header">
+              <h2 class="content-title">系统管理 / 系统主题</h2>
+            </div>
+            <div class="settings-card" data-section="theme-mode">
+              <div class="settings-title">明暗调节</div>
+              <p class="settings-desc">选择系统界面的明亮或黑暗显示模式。</p>
+              <div class="toggle-group">
+                <button class="toggle-button" data-theme-mode="light">明亮模式</button>
+                <button class="toggle-button" data-theme-mode="dark">黑暗模式</button>
+              </div>
+            </div>
+            <div class="settings-card" data-section="theme-presets">
+              <div class="settings-title">主题调节</div>
+              <p class="settings-desc">在主屏幕选择主题预设进行切换。</p>
+              <div class="theme-gallery" id="theme-gallery"></div>
             </div>
           </div>
         </section>
@@ -239,6 +289,7 @@
             accept=".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
           />
         </label>
+        <a class="download-link" href="站点互联信息模板.xlsx" download>下载站点互联信息模板.xlsx</a>
         <button class="primary" id="site-upload-submit" disabled>上传</button>
       </div>
     </div>
@@ -247,6 +298,11 @@
       const navTabs = document.querySelectorAll('.tab');
       const navPanels = document.querySelectorAll('.nav-panel');
       const menuItems = document.querySelectorAll('.menu-item');
+      const menuProject = document.querySelector('.menu-project');
+      const menuSystem = document.querySelector('.menu-system');
+      const menuSystemBase = document.querySelector('.menu-system-base');
+      const menuSystemTheme = document.querySelector('.menu-system-theme');
+      const sidebarTitle = document.getElementById('project-name');
       const panels = document.querySelectorAll('.panel');
       const taskButton = document.querySelector('.task-button');
       const taskModal = document.getElementById('task-modal');
@@ -265,82 +321,137 @@
       const siteUploadSubmit = document.getElementById('site-upload-submit');
       const modeToggle = document.getElementById('mode-toggle');
       const themeToggle = document.getElementById('theme-toggle');
+      const themeGallery = document.getElementById('theme-gallery');
+      const themeModeButtons = document.querySelectorAll('[data-theme-mode]');
+      const themeSectionButtons = document.querySelectorAll('.menu-system-theme .menu-item');
       let toastTimer;
       let navCloseTimer;
 
       const themePresets = [
         {
           name: '星河蓝',
-          background: 'radial-gradient(circle at top, #ffffff 0%, #e7f2ff 42%, #d2e7ff 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #ffffff 0%, #e7f2ff 42%, #d2e7ff 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #1b2b4d 0%, #141f36 50%, #0f172a 100%)',
           accent: '#1d6dff',
           accentSoft: 'rgba(29, 109, 255, 0.16)',
           brand: 'linear-gradient(135deg, #5ac8fa, #1d6dff)',
         },
         {
           name: '霞光橙',
-          background: 'radial-gradient(circle at top, #fff6ef 0%, #ffe2cc 45%, #ffd1b8 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #fff6ef 0%, #ffe2cc 45%, #ffd1b8 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #3a1f16 0%, #2a1712 52%, #1b120d 100%)',
           accent: '#f97316',
           accentSoft: 'rgba(249, 115, 22, 0.18)',
           brand: 'linear-gradient(135deg, #ff9a62, #f97316)',
         },
         {
           name: '薄荷绿',
-          background: 'radial-gradient(circle at top, #f0fff7 0%, #d7f7e9 45%, #c0f0dd 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #f0fff7 0%, #d7f7e9 45%, #c0f0dd 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #102f28 0%, #0d241f 50%, #0a1b17 100%)',
           accent: '#14b8a6',
           accentSoft: 'rgba(20, 184, 166, 0.18)',
           brand: 'linear-gradient(135deg, #6ee7b7, #14b8a6)',
         },
         {
           name: '夜雾紫',
-          background: 'radial-gradient(circle at top, #f7f4ff 0%, #e3d9ff 45%, #d3c4ff 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #f7f4ff 0%, #e3d9ff 45%, #d3c4ff 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #2d214a 0%, #211835 50%, #171225 100%)',
           accent: '#7c3aed',
           accentSoft: 'rgba(124, 58, 237, 0.18)',
           brand: 'linear-gradient(135deg, #c4b5fd, #7c3aed)',
         },
         {
           name: '晨曦粉',
-          background: 'radial-gradient(circle at top, #fff5f8 0%, #ffdbe7 45%, #ffc5d8 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #fff5f8 0%, #ffdbe7 45%, #ffc5d8 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #3b1a2a 0%, #2a131f 50%, #1b0d15 100%)',
           accent: '#ec4899',
           accentSoft: 'rgba(236, 72, 153, 0.18)',
           brand: 'linear-gradient(135deg, #f9a8d4, #ec4899)',
         },
         {
           name: '海盐青',
-          background: 'radial-gradient(circle at top, #f2ffff 0%, #d9f5f7 45%, #c2ebee 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #f2ffff 0%, #d9f5f7 45%, #c2ebee 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #123339 0%, #0f272c 50%, #0b1c20 100%)',
           accent: '#0ea5a4',
           accentSoft: 'rgba(14, 165, 164, 0.18)',
           brand: 'linear-gradient(135deg, #7dd3fc, #0ea5a4)',
         },
         {
           name: '金砂',
-          background: 'radial-gradient(circle at top, #fffaf0 0%, #ffe7c4 45%, #ffd89b 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #fffaf0 0%, #ffe7c4 45%, #ffd89b 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #3a2a15 0%, #2a1e10 50%, #1c150b 100%)',
           accent: '#f59e0b',
           accentSoft: 'rgba(245, 158, 11, 0.2)',
           brand: 'linear-gradient(135deg, #fcd34d, #f59e0b)',
         },
         {
           name: '暮霭灰蓝',
-          background: 'radial-gradient(circle at top, #f4f7ff 0%, #dfe7f5 45%, #cdd8ed 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #f4f7ff 0%, #dfe7f5 45%, #cdd8ed 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #1c263f 0%, #161d30 50%, #0f1625 100%)',
           accent: '#3b82f6',
           accentSoft: 'rgba(59, 130, 246, 0.18)',
           brand: 'linear-gradient(135deg, #93c5fd, #3b82f6)',
         },
         {
           name: '琥珀茶',
-          background: 'radial-gradient(circle at top, #fff8f2 0%, #ffe3cf 45%, #ffd2b2 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #fff8f2 0%, #ffe3cf 45%, #ffd2b2 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #3b2416 0%, #2b1a11 50%, #1c120b 100%)',
           accent: '#ea580c',
           accentSoft: 'rgba(234, 88, 12, 0.18)',
           brand: 'linear-gradient(135deg, #fdba74, #ea580c)',
         },
         {
           name: '青黛',
-          background: 'radial-gradient(circle at top, #f4f7ff 0%, #d6e2ff 45%, #bdd1ff 100%)',
+          backgroundLight:
+            'radial-gradient(circle at top, #f4f7ff 0%, #d6e2ff 45%, #bdd1ff 100%)',
+          backgroundDark:
+            'radial-gradient(circle at top, #1c2a50 0%, #14203a 52%, #0e162a 100%)',
           accent: '#2563eb',
           accentSoft: 'rgba(37, 99, 235, 0.18)',
           brand: 'linear-gradient(135deg, #93c5fd, #2563eb)',
         },
       ];
       let currentThemeIndex = 0;
+
+      const updateThemeGallery = () => {
+        if (!themeGallery) {
+          return;
+        }
+        themeGallery.innerHTML = '';
+        const isDark = document.body.classList.contains('theme-dark');
+        themePresets.forEach((theme, index) => {
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'theme-card';
+          card.dataset.themeIndex = index;
+          card.style.background = isDark ? theme.backgroundDark : theme.backgroundLight;
+          if (index === currentThemeIndex) {
+            card.classList.add('active');
+          }
+          const label = document.createElement('span');
+          label.textContent = theme.name;
+          card.appendChild(label);
+          themeGallery.appendChild(card);
+        });
+      };
 
       const showToast = (message, anchor) => {
         if (!emptyToast) {
@@ -366,10 +477,16 @@
 
       const applyTheme = (theme) => {
         const root = document.documentElement;
-        root.style.setProperty('--page-bg', theme.background);
+        const isDark = document.body.classList.contains('theme-dark');
+        root.style.setProperty('--page-bg', isDark ? theme.backgroundDark : theme.backgroundLight);
         root.style.setProperty('--accent', theme.accent);
         root.style.setProperty('--accent-soft', theme.accentSoft);
         root.style.setProperty('--brand-gradient', theme.brand);
+        updateThemeGallery();
+        themeModeButtons.forEach((button) => {
+          const mode = button.dataset.themeMode;
+          button.classList.toggle('active', (mode === 'dark') === isDark);
+        });
       };
 
       const randomTheme = () => {
@@ -382,6 +499,23 @@
       };
 
       applyTheme(themePresets[currentThemeIndex]);
+      updateThemeGallery();
+
+      const switchSidebarMenu = (menu) => {
+        menuProject.hidden = menu !== 'project';
+        menuSystem.hidden = menu !== 'system';
+        menuSystemBase.hidden = menu !== 'system-base';
+        menuSystemTheme.hidden = menu !== 'system-theme';
+      };
+
+      const activatePanel = (panelId) => {
+        panels.forEach((panel) => {
+          panel.classList.toggle('active', panel.id === panelId);
+        });
+        document.querySelectorAll('.menu-item[data-panel]').forEach((btn) => {
+          btn.classList.toggle('active', btn.dataset.panel === panelId);
+        });
+      };
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
@@ -411,10 +545,18 @@
       menuItems.forEach((item) => {
         item.addEventListener('click', () => {
           const target = item.dataset.panel;
-          menuItems.forEach((btn) => btn.classList.toggle('active', btn === item));
-          panels.forEach((panel) => {
-            panel.classList.toggle('active', panel.id === target);
-          });
+          if (target) {
+            activatePanel(target);
+            return;
+          }
+          const section = item.dataset.section;
+          if (section) {
+            menuItems.forEach((btn) => btn.classList.toggle('active', btn === item));
+            const sectionEl = document.querySelector(`[data-section="${section}"]`);
+            if (sectionEl) {
+              sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
         });
       });
 
@@ -424,10 +566,14 @@
         const rect = taskButton.getBoundingClientRect();
         const maxHeight = Math.min(window.innerHeight * 0.5, taskCard.scrollHeight);
         const rightPadding = 24;
-        const left = Math.min(rect.left, window.innerWidth - rightPadding);
+        const preferredWidth = Math.min(520, window.innerWidth - rightPadding * 2);
+        let left = rect.right + 16;
+        if (left + preferredWidth > window.innerWidth - rightPadding) {
+          left = Math.max(rightPadding, rect.left - preferredWidth - 16);
+        }
         taskCard.style.maxHeight = `${maxHeight}px`;
         taskCard.style.left = `${left}px`;
-        taskCard.style.width = `${Math.max(220, window.innerWidth - left - rightPadding)}px`;
+        taskCard.style.width = `${preferredWidth}px`;
         taskCard.style.top = `${Math.max(24, rect.bottom - maxHeight)}px`;
       });
 
@@ -452,6 +598,14 @@
             projectModal.setAttribute('aria-hidden', 'false');
             projectInput.value = '';
             projectInput.focus();
+          } else if (action === 'system-base') {
+            sidebarTitle.textContent = '系统管理';
+            switchSidebarMenu('system-base');
+            activatePanel('system-base-panel');
+          } else if (action === 'system-theme') {
+            sidebarTitle.textContent = '系统管理';
+            switchSidebarMenu('system-theme');
+            activatePanel('system-theme-panel');
           } else {
             showToast('无', item);
           }
@@ -490,12 +644,39 @@
 
       modeToggle.addEventListener('click', () => {
         document.body.classList.toggle('theme-dark');
+        applyTheme(themePresets[currentThemeIndex]);
       });
 
       themeToggle.addEventListener('click', () => {
         randomTheme();
         showToast('主题已切换', themeToggle);
       });
+
+      themeModeButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          const mode = button.dataset.themeMode;
+          document.body.classList.toggle('theme-dark', mode === 'dark');
+          applyTheme(themePresets[currentThemeIndex]);
+        });
+      });
+
+      themeSectionButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          themeSectionButtons.forEach((btn) => btn.classList.toggle('active', btn === button));
+        });
+      });
+
+      if (themeGallery) {
+        themeGallery.addEventListener('click', (event) => {
+          const card = event.target.closest('.theme-card');
+          if (!card) {
+            return;
+          }
+          currentThemeIndex = Number(card.dataset.themeIndex);
+          applyTheme(themePresets[currentThemeIndex]);
+          showToast('主题已切换', card);
+        });
+      }
 
       document.querySelectorAll('[data-empty="true"]').forEach((button) => {
         button.addEventListener('click', () => {
