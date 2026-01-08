@@ -91,11 +91,18 @@
             <div class="menu" data-menu="project">
               <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
               <button class="menu-item" data-panel="script-panel">脚本管理</button>
+              <button class="menu-item" data-panel="other-panel">其他</button>
+            </div>
+            <div class="project-list is-hidden" id="project-list">
+              <div class="project-list-title" id="project-list-title">正在进行项目</div>
+              <div class="project-list-body" id="project-list-body"></div>
             </div>
             <div class="menu is-hidden" data-menu="system-basic">
               <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
               <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
-              <button class="menu-item" data-panel="system-log-panel">操作日志</button>
+            </div>
+            <div class="menu is-hidden" data-menu="system-logs">
+              <button class="menu-item active" data-panel="system-log-panel">操作日志</button>
             </div>
             <button class="task-button" aria-label="任务日志">
               <span class="task-icon" aria-hidden="true">◎</span>
@@ -104,12 +111,12 @@
 
           <section class="content">
             <div class="panel active" id="topology-panel">
-              <div class="content-header">
-                <div class="content-left">
+              <div class="content-header stacked">
+                <h2 class="content-title">站点拓扑</h2>
+                <div class="content-actions">
                   <button class="primary" id="site-upload-button">添加站点</button>
-                  <h2 class="content-title">站点拓扑</h2>
+                  <button class="ghost" data-empty="true">导出拓扑</button>
                 </div>
-                <button class="ghost" data-empty="true">导出拓扑</button>
               </div>
               <div class="canvas">
                 <div class="canvas-header">
@@ -130,6 +137,19 @@
                 <div class="placeholder-icon">◎</div>
                 <p>脚本管理视图</p>
                 <span>选择左侧菜单以查看脚本内容</span>
+              </div>
+            </div>
+            <div class="panel" id="other-panel">
+              <div class="content-header">
+                <h2 class="content-title">项目完成标记</h2>
+              </div>
+              <div class="settings-card completion-card">
+                <div class="completion-info">
+                  <div class="completion-label">当前项目</div>
+                  <div class="completion-name" id="completion-project-name">未选择项目</div>
+                  <p class="helper-text">将正在进行的项目标记为已完成后，会出现在已完成列表中。</p>
+                </div>
+                <button class="primary" id="mark-complete-button" disabled>标记为已完成</button>
               </div>
             </div>
             <div class="panel" id="timeout-panel">
@@ -179,22 +199,26 @@
     </div>
 
     <div class="modal task-popover" id="task-modal" aria-hidden="true">
-      <div class="modal-card task-card">
-        <div class="modal-header">
-          <h3>最近任务日志</h3>
-          <button class="icon-button" data-close="task-modal" aria-label="关闭">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-              <path
-                d="M6.7 6.7a.8.8 0 0 1 1.1 0L12 11l4.2-4.3a.8.8 0 0 1 1.1 1.1L13.1 12l4.2 4.2a.8.8 0 0 1-1.1 1.1L12 13.1l-4.2 4.2a.8.8 0 0 1-1.1-1.1L10.9 12 6.7 7.8a.8.8 0 0 1 0-1.1Z"
-              />
-            </svg>
-          </button>
-        </div>
-        <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
-          <div class="task-row task-header" role="row">
-            <span role="columnheader">任务名称</span>
-            <span role="columnheader">记录时间</span>
-            <span role="columnheader">结果</span>
+      <div class="task-popover-shell">
+        <div class="modal-card task-card">
+          <div class="modal-header">
+            <h3>最近任务</h3>
+            <button class="icon-button" data-close="task-modal" aria-label="关闭">
+              <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                <path
+                  d="M6.7 6.7a.8.8 0 0 1 1.1 0L12 11l4.2-4.3a.8.8 0 0 1 1.1 1.1L13.1 12l4.2 4.2a.8.8 0 0 1-1.1 1.1L12 13.1l-4.2 4.2a.8.8 0 0 1-1.1-1.1L10.9 12 6.7 7.8a.8.8 0 0 1 0-1.1Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
+            <div class="task-row task-header" role="row">
+              <span role="columnheader">任务名称</span>
+              <span role="columnheader">开始时间</span>
+              <span role="columnheader">进度</span>
+              <span role="columnheader">完成时间</span>
+              <span role="columnheader">结果</span>
+            </div>
           </div>
         </div>
       </div>
@@ -292,11 +316,18 @@
       const homeCards = document.querySelectorAll('.home-card');
       const taskLogList = document.getElementById('task-log-list');
       const systemLogList = document.getElementById('system-log-list');
+      const projectList = document.getElementById('project-list');
+      const projectListTitle = document.getElementById('project-list-title');
+      const projectListBody = document.getElementById('project-list-body');
+      const completionProjectName = document.getElementById('completion-project-name');
+      const markCompleteButton = document.getElementById('mark-complete-button');
       let toastTimer;
       let navCloseTimer;
+      const STORAGE_KEY = 'netweb-projects';
       const projects = [];
       const taskLogs = [];
       let currentProject = null;
+      let currentProjectStatus = null;
 
       const themePresets = [
         {
@@ -443,6 +474,13 @@
           minute: '2-digit',
         });
 
+      const formatClock = (date) =>
+        date.toLocaleTimeString('zh-CN', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+
       const renderTaskLogs = () => {
         if (!taskLogList) {
           return;
@@ -454,8 +492,15 @@
           row.setAttribute('role', 'row');
           row.innerHTML = `
             <span role="cell">${entry.message}</span>
-            <span role="cell">${entry.time}</span>
-            <span role="cell" class="result success">完成</span>
+            <span role="cell">${entry.startTime}</span>
+            <span role="cell">
+              <div class="progress-track">
+                <div class="progress-fill ${entry.status}" style="--progress:${entry.progress}%"></div>
+                <span class="progress-label">${entry.progress}%</span>
+              </div>
+            </span>
+            <span role="cell">${entry.endTime}</span>
+            <span role="cell" class="result ${entry.status}">${entry.result}</span>
           `;
           taskLogList.appendChild(row);
         });
@@ -478,23 +523,92 @@
         });
       };
 
-      const addLogEntry = (message) => {
+      const addLogEntry = (message, options = {}) => {
+        const now = new Date();
         const entry = {
           message,
-          time: formatTime(new Date()),
+          time: formatTime(now),
+          startTime: options.startTime || formatClock(now),
+          endTime: options.endTime || formatClock(now),
+          progress: options.progress ?? 100,
+          status: options.status || 'success',
+          result: options.result || '完成',
         };
         taskLogs.unshift(entry);
         renderTaskLogs();
         renderSystemLogs();
       };
 
+      const saveProjects = () => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+      };
+
+      const loadProjects = () => {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        if (!stored) {
+          return;
+        }
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            projects.push(...parsed);
+          }
+        } catch (error) {
+          console.error('Failed to parse projects', error);
+        }
+      };
+
       const hasProjectsByStatus = (status) =>
         projects.some((project) => project.status === status);
+
+      const updateCompletionPanel = () => {
+        if (!completionProjectName || !markCompleteButton) {
+          return;
+        }
+        if (!currentProject) {
+          completionProjectName.textContent = '未选择项目';
+          markCompleteButton.disabled = true;
+          return;
+        }
+        completionProjectName.textContent = currentProject.name;
+        markCompleteButton.disabled = currentProject.status === 'completed';
+      };
+
+      const renderProjectList = (status) => {
+        if (!projectList || !projectListBody || !projectListTitle) {
+          return;
+        }
+        projectListTitle.textContent = status === 'completed' ? '已完成项目' : '正在进行项目';
+        projectListBody.innerHTML = '';
+        const filtered = projects.filter((project) => project.status === status);
+        if (!filtered.length) {
+          const empty = document.createElement('div');
+          empty.className = 'project-empty';
+          empty.textContent = '暂无项目';
+          projectListBody.appendChild(empty);
+          return;
+        }
+        filtered.forEach((project) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'project-item';
+          button.textContent = project.name;
+          button.classList.toggle('active', currentProject?.name === project.name);
+          button.addEventListener('click', () => {
+            currentProject = project;
+            setSidebarTitle(project.name);
+            renderProjectList(status);
+            updateCompletionPanel();
+          });
+          projectListBody.appendChild(button);
+        });
+      };
 
       const activateProjectView = (status) => {
         if (!hasProjectsByStatus(status)) {
           return false;
         }
+        currentProjectStatus = status;
         currentProject = projects.find((project) => project.status === status) || currentProject;
         setHomeView(false);
         showMenuGroup('project');
@@ -508,6 +622,8 @@
             .forEach((button) => button.classList.toggle('active', button === defaultItem));
         }
         setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+        renderProjectList(status);
+        updateCompletionPanel();
         return true;
       };
 
@@ -515,6 +631,9 @@
         menuGroups.forEach((menu) => {
           menu.classList.toggle('is-hidden', menu.dataset.menu !== menuKey);
         });
+        if (projectList) {
+          projectList.classList.toggle('is-hidden', menuKey !== 'project');
+        }
       };
 
       const applyTheme = (theme) => {
@@ -579,6 +698,7 @@
       applyTheme(themePresets[currentThemeIndex]);
       renderThemeCards();
       setHomeView(true);
+      loadProjects();
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
@@ -619,7 +739,11 @@
           });
           if (parentMenu?.dataset.menu === 'project') {
             setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+            renderProjectList(currentProjectStatus || 'in-progress');
+            updateCompletionPanel();
           } else if (parentMenu?.dataset.menu === 'system-basic') {
+            setSidebarTitle('系统管理');
+          } else if (parentMenu?.dataset.menu === 'system-logs') {
             setSidebarTitle('系统管理');
           }
           setHomeView(false);
@@ -679,11 +803,11 @@
             setSidebarTitle('系统管理');
           } else if (action === 'system-logs') {
             setHomeView(false);
-            showMenuGroup('system-basic');
+            showMenuGroup('system-logs');
             const targetPanel = document.getElementById('system-log-panel');
             panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
             const targetItem = document.querySelector(
-              '[data-menu="system-basic"] [data-panel="system-log-panel"]',
+              '[data-menu="system-logs"] [data-panel="system-log-panel"]',
             );
             if (targetItem) {
               targetItem
@@ -709,6 +833,8 @@
         const project = { name: value, status: 'in-progress' };
         projects.unshift(project);
         currentProject = project;
+        currentProjectStatus = 'in-progress';
+        saveProjects();
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
         addLogEntry(`创建项目：${value}`);
@@ -735,6 +861,28 @@
         showToast('站点信息已上传', siteUploadButton);
         addLogEntry('添加站点信息');
       });
+
+      if (markCompleteButton) {
+        markCompleteButton.addEventListener('click', () => {
+          if (!currentProject) {
+            return;
+          }
+          currentProject.status = 'completed';
+          addLogEntry(`项目已完成：${currentProject.name}`, {
+            result: '完成',
+            status: 'success',
+            progress: 100,
+          });
+          saveProjects();
+          if (currentProjectStatus === 'in-progress') {
+            currentProject =
+              projects.find((project) => project.status === 'in-progress') || null;
+          }
+          renderProjectList(currentProjectStatus || 'in-progress');
+          updateCompletionPanel();
+          setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+        });
+      }
 
       modeToggle.addEventListener('click', () => {
         document.body.classList.toggle('theme-dark');
@@ -827,6 +975,7 @@
 
       renderTaskLogs();
       renderSystemLogs();
+      updateCompletionPanel();
     </script>
   </body>
 </html>
