@@ -91,11 +91,18 @@
             <div class="menu" data-menu="project">
               <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
               <button class="menu-item" data-panel="script-panel">脚本管理</button>
+              <button class="menu-item" data-panel="other-panel">其他</button>
+              <div class="menu-section">
+                <div class="menu-section-title">项目列表</div>
+                <div class="project-list" id="project-list"></div>
+              </div>
             </div>
             <div class="menu is-hidden" data-menu="system-basic">
               <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
               <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
-              <button class="menu-item" data-panel="system-log-panel">操作日志</button>
+            </div>
+            <div class="menu is-hidden" data-menu="system-logs">
+              <button class="menu-item active" data-panel="system-log-panel">操作日志</button>
             </div>
             <button class="task-button" aria-label="任务日志">
               <span class="task-icon" aria-hidden="true">◎</span>
@@ -104,10 +111,12 @@
 
           <section class="content">
             <div class="panel active" id="topology-panel">
+              <div class="panel-heading">
+                <h2 class="panel-title">站点拓扑</h2>
+              </div>
               <div class="content-header">
                 <div class="content-left">
                   <button class="primary" id="site-upload-button">添加站点</button>
-                  <h2 class="content-title">站点拓扑</h2>
                 </div>
                 <button class="ghost" data-empty="true">导出拓扑</button>
               </div>
@@ -130,6 +139,15 @@
                 <div class="placeholder-icon">◎</div>
                 <p>脚本管理视图</p>
                 <span>选择左侧菜单以查看脚本内容</span>
+              </div>
+            </div>
+            <div class="panel" id="other-panel">
+              <div class="content-header">
+                <h2 class="content-title">项目完成标记</h2>
+              </div>
+              <div class="project-status-card">
+                <p class="helper-text">选择正在进行的项目并标记为已完成。</p>
+                <div class="project-status-list" id="project-complete-list"></div>
               </div>
             </div>
             <div class="panel" id="timeout-panel">
@@ -179,22 +197,26 @@
     </div>
 
     <div class="modal task-popover" id="task-modal" aria-hidden="true">
-      <div class="modal-card task-card">
-        <div class="modal-header">
-          <h3>最近任务日志</h3>
-          <button class="icon-button" data-close="task-modal" aria-label="关闭">
-            <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-              <path
-                d="M6.7 6.7a.8.8 0 0 1 1.1 0L12 11l4.2-4.3a.8.8 0 0 1 1.1 1.1L13.1 12l4.2 4.2a.8.8 0 0 1-1.1 1.1L12 13.1l-4.2 4.2a.8.8 0 0 1-1.1-1.1L10.9 12 6.7 7.8a.8.8 0 0 1 0-1.1Z"
-              />
-            </svg>
-          </button>
-        </div>
-        <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
-          <div class="task-row task-header" role="row">
-            <span role="columnheader">任务名称</span>
-            <span role="columnheader">记录时间</span>
-            <span role="columnheader">结果</span>
+      <div class="task-frame">
+        <div class="modal-card task-card">
+          <div class="modal-header">
+            <h3>最近任务</h3>
+            <button class="icon-button" data-close="task-modal" aria-label="关闭">
+              <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                <path
+                  d="M6.7 6.7a.8.8 0 0 1 1.1 0L12 11l4.2-4.3a.8.8 0 0 1 1.1 1.1L13.1 12l4.2 4.2a.8.8 0 0 1-1.1 1.1L12 13.1l-4.2 4.2a.8.8 0 0 1-1.1-1.1L10.9 12 6.7 7.8a.8.8 0 0 1 0-1.1Z"
+                />
+              </svg>
+            </button>
+          </div>
+          <div class="task-table" id="task-log-list" role="table" aria-label="最近任务">
+            <div class="task-row task-header" role="row">
+              <span role="columnheader">任务名称</span>
+              <span role="columnheader">开始时间</span>
+              <span role="columnheader">进度</span>
+              <span role="columnheader">完成时间</span>
+              <span role="columnheader">结果</span>
+            </div>
           </div>
         </div>
       </div>
@@ -292,11 +314,15 @@
       const homeCards = document.querySelectorAll('.home-card');
       const taskLogList = document.getElementById('task-log-list');
       const systemLogList = document.getElementById('system-log-list');
+      const projectList = document.getElementById('project-list');
+      const projectCompleteList = document.getElementById('project-complete-list');
       let toastTimer;
       let navCloseTimer;
       const projects = [];
       const taskLogs = [];
       let currentProject = null;
+      let currentProjectStatus = 'in-progress';
+      const projectStorageKey = 'netweb-projects';
 
       const themePresets = [
         {
@@ -443,6 +469,98 @@
           minute: '2-digit',
         });
 
+      const saveProjects = () => {
+        localStorage.setItem(projectStorageKey, JSON.stringify(projects));
+      };
+
+      const loadProjects = () => {
+        const stored = localStorage.getItem(projectStorageKey);
+        if (!stored) {
+          return;
+        }
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) {
+            parsed.forEach((project) => {
+              if (project?.name && project?.status) {
+                projects.push(project);
+              }
+            });
+          }
+        } catch (error) {
+          localStorage.removeItem(projectStorageKey);
+        }
+      };
+
+      const setCurrentProject = (project) => {
+        currentProject = project;
+        setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+      };
+
+      const createProjectButton = (project) => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'project-item';
+        button.textContent = project.name;
+        button.addEventListener('click', () => {
+          setCurrentProject(project);
+          showToast(`当前管理：${project.name}`, button);
+        });
+        return button;
+      };
+
+      const renderProjectList = (status) => {
+        if (!projectList) {
+          return;
+        }
+        projectList.innerHTML = '';
+        const filtered = projects.filter((project) => project.status === status);
+        if (!filtered.length) {
+          const empty = document.createElement('div');
+          empty.className = 'project-empty';
+          empty.textContent = status === 'completed' ? '暂无已完成项目' : '暂无正在进行项目';
+          projectList.appendChild(empty);
+          return;
+        }
+        filtered.forEach((project) => {
+          projectList.appendChild(createProjectButton(project));
+        });
+      };
+
+      const renderProjectCompleteList = () => {
+        if (!projectCompleteList) {
+          return;
+        }
+        projectCompleteList.innerHTML = '';
+        const inProgress = projects.filter((project) => project.status === 'in-progress');
+        if (!inProgress.length) {
+          const empty = document.createElement('div');
+          empty.className = 'project-empty';
+          empty.textContent = '暂无可标记项目';
+          projectCompleteList.appendChild(empty);
+          return;
+        }
+        inProgress.forEach((project) => {
+          const row = document.createElement('div');
+          row.className = 'project-status-row';
+          const name = document.createElement('span');
+          name.textContent = project.name;
+          const action = document.createElement('button');
+          action.type = 'button';
+          action.className = 'ghost mark-complete';
+          action.textContent = '标记完成';
+          action.addEventListener('click', () => {
+            project.status = 'completed';
+            saveProjects();
+            addLogEntry(`项目已完成：${project.name}`);
+            renderProjectCompleteList();
+            renderProjectList(currentProjectStatus);
+          });
+          row.append(name, action);
+          projectCompleteList.appendChild(row);
+        });
+      };
+
       const renderTaskLogs = () => {
         if (!taskLogList) {
           return;
@@ -452,10 +570,19 @@
           const row = document.createElement('div');
           row.className = 'task-row';
           row.setAttribute('role', 'row');
+          const progressValue = `${entry.progress ?? 100}%`;
           row.innerHTML = `
             <span role="cell">${entry.message}</span>
-            <span role="cell">${entry.time}</span>
-            <span role="cell" class="result success">完成</span>
+            <span role="cell">${entry.startTime}</span>
+            <span role="cell" class="progress-cell">
+              <div class="progress-bar" style="--progress: ${progressValue}">
+                <span>${progressValue}</span>
+              </div>
+            </span>
+            <span role="cell">${entry.endTime}</span>
+            <span role="cell" class="result ${entry.success ? 'success' : 'fail'}">${
+              entry.success ? '完成' : '失败'
+            }</span>
           `;
           taskLogList.appendChild(row);
         });
@@ -479,9 +606,14 @@
       };
 
       const addLogEntry = (message) => {
+        const now = formatTime(new Date());
         const entry = {
           message,
-          time: formatTime(new Date()),
+          startTime: now,
+          endTime: now,
+          progress: 100,
+          success: true,
+          time: now,
         };
         taskLogs.unshift(entry);
         renderTaskLogs();
@@ -495,7 +627,10 @@
         if (!hasProjectsByStatus(status)) {
           return false;
         }
-        currentProject = projects.find((project) => project.status === status) || currentProject;
+        currentProjectStatus = status;
+        setCurrentProject(
+          projects.find((project) => project.status === status) || currentProject,
+        );
         setHomeView(false);
         showMenuGroup('project');
         const targetPanel = document.getElementById('topology-panel');
@@ -507,7 +642,8 @@
             .querySelectorAll('.menu-item')
             .forEach((button) => button.classList.toggle('active', button === defaultItem));
         }
-        setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+        renderProjectList(status);
+        renderProjectCompleteList();
         return true;
       };
 
@@ -619,7 +755,10 @@
           });
           if (parentMenu?.dataset.menu === 'project') {
             setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+            renderProjectCompleteList();
           } else if (parentMenu?.dataset.menu === 'system-basic') {
+            setSidebarTitle('系统管理');
+          } else if (parentMenu?.dataset.menu === 'system-logs') {
             setSidebarTitle('系统管理');
           }
           setHomeView(false);
@@ -679,11 +818,11 @@
             setSidebarTitle('系统管理');
           } else if (action === 'system-logs') {
             setHomeView(false);
-            showMenuGroup('system-basic');
+            showMenuGroup('system-logs');
             const targetPanel = document.getElementById('system-log-panel');
             panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
             const targetItem = document.querySelector(
-              '[data-menu="system-basic"] [data-panel="system-log-panel"]',
+              '[data-menu="system-logs"] [data-panel="system-log-panel"]',
             );
             if (targetItem) {
               targetItem
@@ -708,7 +847,8 @@
         }
         const project = { name: value, status: 'in-progress' };
         projects.unshift(project);
-        currentProject = project;
+        setCurrentProject(project);
+        saveProjects();
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
         addLogEntry(`创建项目：${value}`);
@@ -825,6 +965,9 @@
         });
       });
 
+      loadProjects();
+      renderProjectList(currentProjectStatus);
+      renderProjectCompleteList();
       renderTaskLogs();
       renderSystemLogs();
     </script>
