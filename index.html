@@ -9,13 +9,13 @@
   <body>
     <div class="app">
       <header class="top-bar">
-        <div class="brand">
+        <button class="brand brand-button" id="home-button" type="button" aria-label="返回主界面">
           <div class="brand-icon">NW</div>
           <div>
             <h1>NetWeb</h1>
             <p>数据网项目交付管理</p>
           </div>
-        </div>
+        </button>
         <nav class="nav">
           <div class="nav-group">
             <button class="tab active" data-menu="project-menu">项目管理</button>
@@ -29,7 +29,6 @@
             <button class="tab" data-menu="system-menu">系统管理</button>
             <div class="nav-panel" id="system-menu">
               <button class="nav-item" data-action="system-basic">基本设置</button>
-              <button class="nav-item" data-action="system-theme">系统主题</button>
               <button class="nav-item">安全管理</button>
               <button class="nav-item">操作日志</button>
             </div>
@@ -44,6 +43,16 @@
                 />
               </svg>
             </button>
+            <div class="user-profile">
+              <button class="icon-button user-icon-button" aria-label="用户">
+                <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
+                  <path
+                    d="M12 12.5c2.4 0 4.4-2 4.4-4.4S14.4 3.7 12 3.7 7.6 5.7 7.6 8.1 9.6 12.5 12 12.5Zm0 2.1c-4 0-7.4 2.1-7.4 4.6 0 .7.6 1.1 1.3 1.1h12.2c.7 0 1.3-.4 1.3-1.1 0-2.5-3.4-4.6-7.4-4.6Z"
+                  />
+                </svg>
+              </button>
+              <span class="user-name">Admin</span>
+            </div>
             <button class="icon-button" id="mode-toggle" aria-label="明暗切换">
               <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
                 <path
@@ -59,100 +68,102 @@
               </svg>
             </button>
           </div>
-          <div class="user-profile">
-            <button class="icon-button user-icon-button" aria-label="用户">
-              <svg viewBox="0 0 24 24" role="img" aria-hidden="true">
-                <path
-                  d="M12 12.5c2.4 0 4.4-2 4.4-4.4S14.4 3.7 12 3.7 7.6 5.7 7.6 8.1 9.6 12.5 12 12.5Zm0 2.1c-4 0-7.4 2.1-7.4 4.6 0 .7.6 1.1 1.3 1.1h12.2c.7 0 1.3-.4 1.3-1.1 0-2.5-3.4-4.6-7.4-4.6Z"
-                />
-              </svg>
-            </button>
-            <span class="user-name">Admin</span>
-          </div>
         </div>
       </header>
 
-      <main class="layout">
-        <aside class="sidebar">
-          <div class="sidebar-header">
-            <h2 id="project-name">项目名称</h2>
+      <main class="main-area">
+        <section class="home-view" id="home-view">
+          <div class="home-header">
+            <h2>项目管理</h2>
+            <p>请选择需要进入的功能</p>
           </div>
-          <div class="menu" data-menu="project">
-            <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
-            <button class="menu-item" data-panel="script-panel">脚本管理</button>
-          </div>
-          <div class="menu is-hidden" data-menu="system-basic">
-            <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
-          </div>
-          <div class="menu is-hidden" data-menu="system-theme">
-            <button class="menu-item active" data-panel="system-theme-panel">系统主题</button>
-          </div>
-          <button class="task-button" aria-label="任务日志">
-            <span class="task-icon" aria-hidden="true">◎</span>
-          </button>
-        </aside>
-
-        <section class="content">
-          <div class="panel active" id="topology-panel">
-            <div class="content-header">
-              <div class="content-left">
-                <button class="primary" id="site-upload-button">添加站点</button>
-                <h2 class="content-title">站点拓扑</h2>
-              </div>
-              <button class="ghost" data-empty="true">导出拓扑</button>
-            </div>
-            <div class="canvas">
-              <div class="canvas-header">
-                <h3>主内容区域</h3>
-                <span>在此呈现站点拓扑与可视化配置</span>
-              </div>
-              <div class="canvas-body">
-                <div class="placeholder">
-                  <div class="placeholder-icon">◎</div>
-                  <p>空白画布</p>
-                  <span>拖拽设备与节点开始配置</span>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="panel" id="script-panel">
-            <div class="empty-state">
-              <div class="placeholder-icon">◎</div>
-              <p>脚本管理视图</p>
-              <span>选择左侧菜单以查看脚本内容</span>
-            </div>
-          </div>
-          <div class="panel" id="timeout-panel">
-            <div class="content-header">
-              <h2 class="content-title">超时时间</h2>
-            </div>
-            <div class="settings-card">
-              <label class="field">
-                <span>超时时间（分钟）</span>
-                <input type="number" value="999" min="1" />
-              </label>
-              <p class="helper-text">超时后将自动退出当前账号。</p>
-            </div>
-          </div>
-          <div class="panel" id="system-theme-panel">
-            <div class="content-header">
-              <h2 class="content-title">系统主题</h2>
-            </div>
-            <div class="theme-settings">
-              <section class="setting-section">
-                <div class="setting-title">明暗调节</div>
-                <div class="mode-switch" role="group" aria-label="明暗调节">
-                  <button class="mode-chip" data-mode="light">明亮模式</button>
-                  <button class="mode-chip" data-mode="dark">黑暗模式</button>
-                </div>
-              </section>
-              <section class="setting-section">
-                <div class="setting-title">主题调节</div>
-                <div class="theme-grid" id="theme-grid"></div>
-              </section>
-            </div>
+          <div class="home-cards">
+            <button class="home-card" data-action="new-project">新建项目</button>
+            <button class="home-card" data-action="project-home">正在进行</button>
+            <button class="home-card" data-action="project-home">已完成</button>
           </div>
         </section>
+
+        <div class="layout">
+          <aside class="sidebar">
+            <div class="sidebar-header">
+              <h2 id="sidebar-title">项目管理</h2>
+            </div>
+            <div class="menu" data-menu="project">
+              <button class="menu-item active" data-panel="topology-panel">站点拓扑</button>
+              <button class="menu-item" data-panel="script-panel">脚本管理</button>
+            </div>
+            <div class="menu is-hidden" data-menu="system-basic">
+              <button class="menu-item active" data-panel="timeout-panel">超时时间</button>
+              <button class="menu-item" data-panel="system-theme-panel">系统主题</button>
+            </div>
+            <button class="task-button" aria-label="任务日志">
+              <span class="task-icon" aria-hidden="true">◎</span>
+            </button>
+          </aside>
+
+          <section class="content">
+            <div class="panel active" id="topology-panel">
+              <div class="content-header">
+                <div class="content-left">
+                  <button class="primary" id="site-upload-button">添加站点</button>
+                  <h2 class="content-title">站点拓扑</h2>
+                </div>
+                <button class="ghost" data-empty="true">导出拓扑</button>
+              </div>
+              <div class="canvas">
+                <div class="canvas-header">
+                  <h3>主内容区域</h3>
+                  <span>在此呈现站点拓扑与可视化配置</span>
+                </div>
+                <div class="canvas-body">
+                  <div class="placeholder">
+                    <div class="placeholder-icon">◎</div>
+                    <p>空白画布</p>
+                    <span>拖拽设备与节点开始配置</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel" id="script-panel">
+              <div class="empty-state">
+                <div class="placeholder-icon">◎</div>
+                <p>脚本管理视图</p>
+                <span>选择左侧菜单以查看脚本内容</span>
+              </div>
+            </div>
+            <div class="panel" id="timeout-panel">
+              <div class="content-header">
+                <h2 class="content-title">超时时间</h2>
+              </div>
+              <div class="settings-card">
+                <label class="field">
+                  <span>超时时间（分钟）</span>
+                  <input type="number" value="999" min="1" />
+                </label>
+                <p class="helper-text">超时后将自动退出当前账号。</p>
+              </div>
+            </div>
+            <div class="panel" id="system-theme-panel">
+              <div class="content-header">
+                <h2 class="content-title">系统主题</h2>
+              </div>
+              <div class="theme-settings">
+                <section class="setting-section">
+                  <div class="setting-title">明暗调节</div>
+                  <div class="mode-switch" role="group" aria-label="明暗调节">
+                    <button class="mode-chip" data-mode="light">明亮模式</button>
+                    <button class="mode-chip" data-mode="dark">黑暗模式</button>
+                  </div>
+                </section>
+                <section class="setting-section">
+                  <div class="setting-title">主题调节</div>
+                  <div class="theme-grid" id="theme-grid"></div>
+                </section>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
     </div>
 
@@ -294,15 +305,13 @@
       const panels = document.querySelectorAll('.panel');
       const taskButton = document.querySelector('.task-button');
       const taskModal = document.getElementById('task-modal');
-      const taskCard = taskModal.querySelector('.modal-card');
-      const taskLogList = document.getElementById('task-log-list');
       const emptyToast = document.getElementById('empty-toast');
       const versionButton = document.getElementById('version-button');
       const versionModal = document.getElementById('version-modal');
       const projectModal = document.getElementById('project-modal');
       const projectInput = document.getElementById('project-input');
       const projectSubmit = document.getElementById('project-submit');
-      const projectName = document.getElementById('project-name');
+      const sidebarTitle = document.getElementById('sidebar-title');
       const siteModal = document.getElementById('site-modal');
       const siteUploadButton = document.getElementById('site-upload-button');
       const siteFileInput = document.getElementById('site-file');
@@ -311,6 +320,8 @@
       const themeToggle = document.getElementById('theme-toggle');
       const themeGrid = document.getElementById('theme-grid');
       const modeChips = document.querySelectorAll('.mode-chip');
+      const homeButton = document.getElementById('home-button');
+      const homeCards = document.querySelectorAll('.home-card');
       let toastTimer;
       let navCloseTimer;
 
@@ -440,6 +451,16 @@
         navPanels.forEach((panel) => panel.classList.remove('open'));
       };
 
+      const setHomeView = (isActive) => {
+        document.body.classList.toggle('home-active', isActive);
+      };
+
+      const setSidebarTitle = (title) => {
+        if (sidebarTitle) {
+          sidebarTitle.textContent = title;
+        }
+      };
+
       const showMenuGroup = (menuKey) => {
         menuGroups.forEach((menu) => {
           menu.classList.toggle('is-hidden', menu.dataset.menu !== menuKey);
@@ -489,10 +510,7 @@
           card.type = 'button';
           card.className = 'theme-card';
           card.dataset.index = index;
-          card.innerHTML = `
-            <div class="theme-preview"></div>
-            <div class="theme-name">${theme.name}</div>
-          `;
+          card.innerHTML = `<div class="theme-name">${theme.name}</div>`;
           themeGrid.appendChild(card);
         });
         updateThemePreviews();
@@ -510,6 +528,7 @@
 
       applyTheme(themePresets[currentThemeIndex]);
       renderThemeCards();
+      setHomeView(true);
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
@@ -548,6 +567,12 @@
           panels.forEach((panel) => {
             panel.classList.toggle('active', panel.id === target);
           });
+          if (parentMenu?.dataset.menu === 'project') {
+            setSidebarTitle('项目管理');
+          } else if (parentMenu?.dataset.menu === 'system-basic') {
+            setSidebarTitle('系统管理');
+          }
+          setHomeView(false);
         });
       });
 
@@ -557,22 +582,6 @@
         window.requestAnimationFrame(() => {
           taskModal.classList.add('visible');
         });
-        const rect = taskButton.getBoundingClientRect();
-        const maxHeight = Math.min(window.innerHeight * 0.6, taskCard.scrollHeight);
-        const cardWidth = Math.min(860, window.innerWidth - 48);
-        const leftCandidate = rect.right + 16;
-        const left = Math.min(
-          Math.max(leftCandidate, 24),
-          window.innerWidth - cardWidth - 24,
-        );
-        const top = Math.min(
-          Math.max(rect.bottom - maxHeight, 24),
-          window.innerHeight - maxHeight - 24,
-        );
-        taskCard.style.maxHeight = `${maxHeight}px`;
-        taskCard.style.left = `${left}px`;
-        taskCard.style.width = `${cardWidth}px`;
-        taskCard.style.top = `${top}px`;
       });
 
       document.querySelectorAll('[data-close]').forEach((button) => {
@@ -593,11 +602,15 @@
         item.addEventListener('click', () => {
           const action = item.dataset.action;
           if (action === 'new-project') {
+            setHomeView(false);
+            showMenuGroup('project');
+            setSidebarTitle('项目管理');
             projectModal.classList.add('open');
             projectModal.setAttribute('aria-hidden', 'false');
             projectInput.value = '';
             projectInput.focus();
           } else if (action === 'project-home') {
+            setHomeView(false);
             showMenuGroup('project');
             const targetPanel = document.getElementById('topology-panel');
             panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
@@ -608,8 +621,9 @@
                 .querySelectorAll('.menu-item')
                 .forEach((button) => button.classList.toggle('active', button === defaultItem));
             }
-            projectName.textContent = '项目名称';
+            setSidebarTitle('项目管理');
           } else if (action === 'system-basic') {
+            setHomeView(false);
             showMenuGroup('system-basic');
             const targetPanel = document.getElementById('timeout-panel');
             panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
@@ -620,19 +634,7 @@
                 .querySelectorAll('.menu-item')
                 .forEach((button) => button.classList.toggle('active', button === defaultItem));
             }
-            projectName.textContent = '系统管理';
-          } else if (action === 'system-theme') {
-            showMenuGroup('system-theme');
-            const targetPanel = document.getElementById('system-theme-panel');
-            panels.forEach((panel) => panel.classList.toggle('active', panel === targetPanel));
-            const defaultItem = document.querySelector('[data-menu="system-theme"] .menu-item');
-            if (defaultItem) {
-              defaultItem
-                .closest('.menu')
-                .querySelectorAll('.menu-item')
-                .forEach((button) => button.classList.toggle('active', button === defaultItem));
-            }
-            projectName.textContent = '系统管理';
+            setSidebarTitle('系统管理');
           } else {
             showToast('无', item);
           }
@@ -642,9 +644,6 @@
 
       projectSubmit.addEventListener('click', () => {
         const value = projectInput.value.trim();
-        if (value) {
-          projectName.textContent = value;
-        }
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
       });
@@ -741,6 +740,21 @@
           (chip.dataset.mode === 'dark' && isDarkMode) ||
             (chip.dataset.mode === 'light' && !isDarkMode),
         );
+      });
+
+      homeButton.addEventListener('click', () => {
+        setHomeView(true);
+        closeNavPanels();
+      });
+
+      homeCards.forEach((card) => {
+        card.addEventListener('click', () => {
+          const action = card.dataset.action;
+          const trigger = document.querySelector(`.nav-item[data-action="${action}"]`);
+          if (trigger) {
+            trigger.click();
+          }
+        });
       });
     </script>
   </body>
