@@ -466,6 +466,11 @@ body.home-active .task-button {
   font-weight: 600;
 }
 
+.content-title-center {
+  text-align: center;
+  margin-top: -6px;
+}
+
 .content-actions {
   display: flex;
   gap: 12px;
@@ -679,7 +684,7 @@ body.home-active .task-button {
 }
 
 .task-card {
-  width: min(720px, calc(100% - 360px));
+  width: min(1120px, 92vw);
 }
 
 .task-table {
@@ -689,14 +694,16 @@ body.home-active .task-button {
   border-radius: 12px;
   overflow: hidden;
   font-size: 13px;
+  background: rgba(255, 255, 255, 0.9);
 }
 
 .task-row {
   display: grid;
-  grid-template-columns: 2fr 1fr 0.6fr;
+  grid-template-columns: 2fr 1fr 1.4fr 1fr 0.6fr;
   align-items: center;
   background: rgba(255, 255, 255, 0.75);
   color: var(--text);
+  user-select: none;
 }
 
 .task-row span {
@@ -722,6 +729,40 @@ body.home-active .task-button {
   background: rgba(250, 251, 253, 0.85);
 }
 
+.task-row:active {
+  background: inherit;
+}
+
+.progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-track {
+  flex: 1;
+  height: 10px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  display: block;
+  height: 100%;
+  width: var(--progress);
+  background: linear-gradient(135deg, #34d399, #10b981);
+  border-radius: 999px;
+  animation: progress-fill 0.8s ease-out;
+}
+
+.task-row .progress-cell strong {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 40px;
+  text-align: right;
+}
+
 .result {
   font-weight: 600;
   color: var(--text);
@@ -732,34 +773,19 @@ body.home-active .task-button {
   color: #10b981;
 }
 
-.task-popover {
-  background: rgba(15, 15, 18, 0.2);
-  align-items: flex-end;
-  justify-content: stretch;
-  padding: 0;
+.result.error {
+  color: #ef4444;
 }
 
-.task-popover .modal-card {
-  position: fixed;
-  right: 32px;
-  bottom: 0;
-  height: auto;
-  max-height: 45vh;
-  width: min(720px, calc(100% - 360px));
-  border-radius: 28px 28px 0 0;
-  overflow: auto;
-  border: 1px solid rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(22px);
-  transform: translateX(-120px) scaleX(0.85);
-  opacity: 0;
-  transition: transform 0.28s ease, opacity 0.28s ease;
-  transform-origin: left center;
-  box-shadow: 0 30px 70px rgba(8, 12, 20, 0.35);
+.task-modal {
+  background: rgba(15, 15, 18, 0.35);
+  padding: 24px;
 }
 
-.task-popover.visible .modal-card {
-  transform: translateX(0) scaleX(1);
-  opacity: 1;
+.task-modal .modal-card {
+  border-radius: 28px;
+  padding: 24px;
+  box-shadow: 0 30px 70px rgba(8, 12, 20, 0.25);
 }
 
 .toast {
@@ -814,6 +840,10 @@ body.theme-dark .task-row:nth-child(even) {
 
 body.theme-dark .task-table {
   border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.theme-dark .progress-track {
+  background: rgba(148, 163, 184, 0.2);
 }
 
 body.theme-dark .log-row,
@@ -948,6 +978,80 @@ body.theme-dark .template-download {
   background: rgba(30, 36, 52, 0.9);
 }
 
+.project-list {
+  display: grid;
+  gap: 12px;
+}
+
+.project-list-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.project-status {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.project-list-body {
+  display: grid;
+  gap: 10px;
+}
+
+.project-item {
+  border: 1px solid transparent;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(246, 248, 252, 0.9);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  font-size: 14px;
+}
+
+.project-item.active {
+  border-color: rgba(0, 122, 255, 0.4);
+  background: var(--surface-strong);
+  color: var(--accent);
+}
+
+.project-empty {
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(246, 248, 252, 0.9);
+  font-size: 13px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.completion-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.completion-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--border);
+  font-size: 14px;
+}
+
+body.theme-dark .project-item,
+body.theme-dark .project-empty,
+body.theme-dark .completion-row {
+  background: rgba(30, 36, 52, 0.9);
+  color: var(--text);
+  border-color: rgba(148, 163, 184, 0.25);
+}
+
 @keyframes progress-fill {
   from {
     width: 0%;
@@ -977,8 +1081,7 @@ body.theme-dark .template-download {
     flex-wrap: wrap;
   }
 
-  .task-popover .modal-card {
-    width: calc(100% - 64px);
-    right: 32px;
+  .task-modal .modal-card {
+    width: calc(100% - 48px);
   }
 }
