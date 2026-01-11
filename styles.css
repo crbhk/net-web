@@ -332,17 +332,23 @@ body.theme-dark {
 
 .home-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
   flex: 1;
+  align-content: start;
+}
+
+.home-card-group {
+  position: relative;
+  display: grid;
   align-content: start;
 }
 
 .home-card {
   border: none;
   border-radius: 24px;
-  padding: 28px;
-  font-size: 20px;
+  padding: 24px;
+  font-size: 22px;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, rgba(73, 141, 255, 0.9), rgba(0, 102, 255, 0.95));
@@ -350,18 +356,18 @@ body.theme-dark {
   cursor: pointer;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  aspect-ratio: 1 / 1;
-  min-height: 180px;
+  aspect-ratio: 1.618 / 1;
+  min-height: 140px;
   display: grid;
   place-items: center;
 }
 
-.home-card:nth-child(2) {
+.home-card-progress {
   background: linear-gradient(135deg, rgba(20, 184, 166, 0.9), rgba(14, 116, 144, 0.95));
   box-shadow: 0 20px 40px rgba(20, 184, 166, 0.25);
 }
 
-.home-card:nth-child(3) {
+.home-card-completed {
   background: linear-gradient(135deg, rgba(249, 115, 22, 0.9), rgba(234, 88, 12, 0.95));
   box-shadow: 0 20px 40px rgba(234, 88, 12, 0.25);
 }
@@ -378,7 +384,7 @@ body.home-active .home-view {
   display: flex;
 }
 
-body.home-active .task-button {
+body.home-active .sidebar .task-button {
   display: none;
 }
 
@@ -441,6 +447,18 @@ body.home-active .task-button {
   place-items: center;
   cursor: pointer;
   box-shadow: var(--glow);
+}
+
+.home-task-button {
+  display: none;
+  position: fixed;
+  left: 40px;
+  bottom: 40px;
+  z-index: 25;
+}
+
+body.home-active .home-task-button {
+  display: grid;
 }
 
 .task-icon {
@@ -756,7 +774,7 @@ body.home-active .task-button {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .task-row {
@@ -768,7 +786,7 @@ body.home-active .task-button {
 }
 
 .task-row span {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-right: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -976,6 +994,21 @@ body.theme-dark .nav-subitem:hover {
   color: #bfdbfe;
 }
 
+body.theme-dark .home-submenu {
+  background: rgba(20, 24, 34, 0.98);
+  border-color: rgba(148, 163, 184, 0.24);
+}
+
+body.theme-dark .home-subitem {
+  background: rgba(30, 36, 52, 0.9);
+  color: var(--text);
+}
+
+body.theme-dark .home-subitem:hover {
+  background: rgba(59, 130, 246, 0.18);
+  color: #bfdbfe;
+}
+
 body.theme-dark .icon-button {
   background: rgba(25, 31, 46, 0.95);
   border-color: rgba(148, 163, 184, 0.2);
@@ -1030,19 +1063,21 @@ body.theme-dark .theme-card {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .log-row {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1.8fr 0.9fr 1.4fr 0.9fr 0.7fr;
   align-items: center;
   background: rgba(255, 255, 255, 0.75);
   color: var(--text);
 }
 
 .log-row span {
-  padding: 12px 14px;
+  padding: 8px 10px;
   border-right: 1px solid var(--border);
 }
 
@@ -1163,6 +1198,60 @@ body.theme-dark .project-status-empty {
 
 body.theme-dark .project-state.is-completed {
   color: #34d399;
+}
+
+.home-submenu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  background: var(--surface-strong);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow);
+  z-index: 12;
+}
+
+.home-card-group.open .home-submenu,
+.home-card-group:hover .home-submenu {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.home-subitem {
+  border: none;
+  background: rgba(246, 248, 252, 0.92);
+  padding: 8px 10px;
+  border-radius: 10px;
+  text-align: left;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text);
+  box-shadow: var(--shadow-soft);
+}
+
+.home-subitem:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.home-subitem.is-disabled {
+  cursor: default;
+  color: var(--muted);
+  background: rgba(246, 248, 252, 0.7);
+  box-shadow: none;
+}
+
+body.modal-open .top-bar {
+  background: var(--surface);
 }
 
 @keyframes progress-fill {
