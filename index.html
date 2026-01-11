@@ -87,6 +87,21 @@
             <button class="home-card" data-action="project-in-progress">正在进行</button>
             <button class="home-card" data-action="project-completed">已完成</button>
           </div>
+          <div class="home-bottom">
+            <div class="home-task-card">
+              <div class="home-task-header">
+                <h3>最近任务</h3>
+                <span>仅展示 10 条</span>
+              </div>
+              <div class="home-task-table" id="home-task-list" role="table" aria-label="主页最近任务">
+                <div class="home-task-row home-task-header-row" role="row">
+                  <span role="columnheader">任务名称</span>
+                  <span role="columnheader">时间</span>
+                  <span role="columnheader">结果</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
         <div class="layout">
@@ -176,7 +191,10 @@
               <div class="log-table" id="system-log-list" role="table" aria-label="系统操作日志">
                 <div class="log-row log-header" role="row">
                   <span role="columnheader">操作内容</span>
-                  <span role="columnheader">记录时间</span>
+                  <span role="columnheader">开始时间</span>
+                  <span role="columnheader">进度</span>
+                  <span role="columnheader">完成时间</span>
+                  <span role="columnheader">结果</span>
                 </div>
               </div>
             </div>
@@ -315,6 +333,7 @@
       const homeButton = document.getElementById('home-button');
       const homeCards = document.querySelectorAll('.home-card');
       const taskLogList = document.getElementById('task-log-list');
+      const homeTaskList = document.getElementById('home-task-list');
       const systemLogList = document.getElementById('system-log-list');
       const projectStatusList = document.getElementById('project-status-list');
       const projectSubmenuInProgress = document.querySelector('[data-submenu="in-progress"]');
@@ -351,6 +370,7 @@
           logTime: '11:21',
         },
       ];
+      const systemLogs = [...taskLogs];
       let currentProject = null;
 
       const themePresets = [
@@ -483,6 +503,11 @@
         document.body.classList.toggle('home-active', isActive);
       };
 
+      const updateModalState = () => {
+        const hasOpenModal = Boolean(document.querySelector('.modal.open'));
+        document.body.classList.toggle('modal-active', hasOpenModal);
+      };
+
       const setSidebarTitle = (title) => {
         if (sidebarTitle) {
           sidebarTitle.textContent = title;
@@ -510,7 +535,7 @@
           return;
         }
         taskLogList.querySelectorAll('.task-row:not(.task-header)').forEach((row) => row.remove());
-        taskLogs.forEach((entry) => {
+        taskLogs.slice(0, 10).forEach((entry) => {
           const row = document.createElement('div');
           row.className = 'task-row';
           row.setAttribute('role', 'row');
@@ -532,6 +557,23 @@
           `;
           taskLogList.appendChild(row);
         });
+        if (homeTaskList) {
+          homeTaskList
+            .querySelectorAll('.home-task-row:not(.home-task-header-row)')
+            .forEach((row) => row.remove());
+          taskLogs.slice(0, 10).forEach((entry) => {
+            const row = document.createElement('div');
+            row.className = 'home-task-row';
+            row.setAttribute('role', 'row');
+            const statusClass = entry.status === 'fail' ? 'fail' : 'success';
+            row.innerHTML = `
+              <span role="cell">${entry.name}</span>
+              <span role="cell">${entry.logTime ?? entry.endTime}</span>
+              <span role="cell" class="result ${statusClass}">${entry.result}</span>
+            `;
+            homeTaskList.appendChild(row);
+          });
+        }
       };
 
       const renderSystemLogs = () => {
@@ -539,22 +581,42 @@
           return;
         }
         systemLogList.querySelectorAll('.log-row:not(.log-header)').forEach((row) => row.remove());
-        taskLogs.forEach((entry) => {
+        systemLogs.forEach((entry) => {
           const row = document.createElement('div');
           row.className = 'log-row';
           row.setAttribute('role', 'row');
+          const statusClass = entry.status === 'fail' ? 'fail' : 'success';
+          const progressClass = statusClass === 'fail' ? '' : 'success';
           row.innerHTML = `
             <span role="cell">${entry.name}</span>
-            <span role="cell">${entry.logTime ?? entry.endTime}</span>
+            <span role="cell">${entry.startTime}</span>
+            <span role="cell">
+              <span class="progress">
+                <span class="progress-bar">
+                  <span class="progress-fill ${progressClass}" style="--progress:${entry.progress}%"></span>
+                </span>
+                <span class="progress-value">${entry.progress}%</span>
+              </span>
+            </span>
+            <span role="cell">${entry.endTime}</span>
+            <span role="cell" class="result ${statusClass}">${entry.result}</span>
           `;
           systemLogList.appendChild(row);
         });
       };
 
       const addLogEntry = (message) => {
+        const entry = createLogEntry(message);
+        taskLogs.unshift(entry);
+        systemLogs.unshift(entry);
+        renderTaskLogs();
+        renderSystemLogs();
+      };
+
+      const createLogEntry = (message) => {
         const now = new Date();
         const shortTime = formatShortTime(now);
-        const entry = {
+        return {
           name: message,
           startTime: shortTime,
           endTime: shortTime,
@@ -563,8 +625,11 @@
           status: 'success',
           logTime: formatTime(now),
         };
-        taskLogs.unshift(entry);
-        renderTaskLogs();
+      };
+
+      const addSystemLog = (message) => {
+        const entry = createLogEntry(message);
+        systemLogs.unshift(entry);
         renderSystemLogs();
       };
 
@@ -653,8 +718,9 @@
               }">${project.status === 'completed' ? '已完成' : '正在进行'}</span>
             </div>
             <div class="project-status-actions">
-              <button type="button" class="ghost" data-action="mark-complete" data-project="${project.name}">标记已完成</button>
-              <button type="button" class="ghost" data-action="cancel-complete" data-project="${project.name}">取消已完成</button>
+              <button type="button" class="ghost" data-action="toggle-complete" data-project="${project.name}">${
+                project.status === 'completed' ? '取消已完成' : '标记已完成'
+              }</button>
             </div>
           `;
           projectStatusList.appendChild(row);
@@ -726,6 +792,7 @@
 
       navTabs.forEach((tab) => {
         const navGroup = tab.closest('.nav-group');
+        const navPanel = navGroup ? navGroup.querySelector('.nav-panel') : null;
         const openPanel = () => {
           window.clearTimeout(navCloseTimer);
           const targetId = tab.dataset.menu;
@@ -747,6 +814,10 @@
 
         navGroup.addEventListener('mouseenter', openPanel);
         navGroup.addEventListener('mouseleave', scheduleClose);
+        if (navPanel) {
+          navPanel.addEventListener('mouseenter', () => window.clearTimeout(navCloseTimer));
+          navPanel.addEventListener('mouseleave', scheduleClose);
+        }
       });
 
       menuItems.forEach((item) => {
@@ -775,6 +846,7 @@
       taskButton.addEventListener('click', () => {
         taskModal.classList.add('open');
         taskModal.setAttribute('aria-hidden', 'false');
+        updateModalState();
         window.requestAnimationFrame(() => {
           taskModal.classList.add('visible');
           const rect = taskButton.getBoundingClientRect();
@@ -799,12 +871,15 @@
           target.classList.remove('open');
           target.classList.remove('visible');
           target.setAttribute('aria-hidden', 'true');
+          updateModalState();
         });
       });
 
       versionButton.addEventListener('click', () => {
         versionModal.classList.add('open');
         versionModal.setAttribute('aria-hidden', 'false');
+        addSystemLog('查看版本信息');
+        updateModalState();
       });
 
       document.querySelectorAll('.nav-item').forEach((item) => {
@@ -815,14 +890,14 @@
             projectModal.setAttribute('aria-hidden', 'false');
             projectInput.value = '';
             projectInput.focus();
+            addSystemLog('打开新建项目');
+            updateModalState();
           } else if (action === 'project-in-progress') {
-            if (!activateProjectView('in-progress')) {
-              showToast('暂无正在进行的项目', item);
-            }
+            showToast('请从列表选择正在进行的项目', item);
+            return;
           } else if (action === 'project-completed') {
-            if (!activateProjectView('completed')) {
-              showToast('暂无已完成的项目', item);
-            }
+            showToast('请从列表选择已完成的项目', item);
+            return;
           } else if (action === 'system-basic') {
             setHomeView(false);
             showMenuGroup('system-basic');
@@ -836,6 +911,7 @@
                 .forEach((button) => button.classList.toggle('active', button === defaultItem));
             }
             setSidebarTitle('系统管理');
+            addSystemLog('进入系统管理-基本设置');
           } else if (action === 'system-logs') {
             setHomeView(false);
             showMenuGroup('system-log');
@@ -851,6 +927,7 @@
                 .forEach((button) => button.classList.toggle('active', button === targetItem));
             }
             setSidebarTitle('系统管理');
+            addSystemLog('查看系统操作日志');
           } else {
             showToast('无', item);
           }
@@ -870,6 +947,7 @@
         currentProject = project;
         projectModal.classList.remove('open');
         projectModal.setAttribute('aria-hidden', 'true');
+        updateModalState();
         addLogEntry(`创建项目：${value}`);
         activateProjectView('in-progress');
         renderProjectSubmenus();
@@ -881,6 +959,8 @@
         siteModal.setAttribute('aria-hidden', 'false');
         siteFileInput.value = '';
         siteUploadSubmit.disabled = true;
+        addSystemLog('打开站点上传');
+        updateModalState();
       });
 
       siteFileInput.addEventListener('change', () => {
@@ -893,6 +973,7 @@
         }
         siteModal.classList.remove('open');
         siteModal.setAttribute('aria-hidden', 'true');
+        updateModalState();
         showToast('站点信息已上传', siteUploadButton);
         addLogEntry('添加站点信息');
       });
@@ -909,6 +990,7 @@
               (chip.dataset.mode === 'light' && !isDarkMode),
           );
         });
+        addSystemLog('切换明暗模式');
       });
 
       themeToggle.addEventListener('click', () => {
@@ -916,6 +998,7 @@
         showToast('主题已切换', themeToggle);
         updateThemeSelection();
         updateThemePreviews();
+        addSystemLog('随机切换主题');
       });
 
       if (themeGrid) {
@@ -928,6 +1011,7 @@
           applyTheme(themePresets[currentThemeIndex]);
           updateThemeSelection();
           showToast('主题已切换', card);
+          addSystemLog(`切换主题：${themePresets[currentThemeIndex].name}`);
         });
       }
 
@@ -937,6 +1021,7 @@
           applyTheme(themePresets[currentThemeIndex]);
           updateThemePreviews();
           modeChips.forEach((item) => item.classList.toggle('active', item === chip));
+          addSystemLog(`切换为${chip.dataset.mode === 'dark' ? '黑暗' : '明亮'}模式`);
         });
       });
 
@@ -951,6 +1036,7 @@
           event.target.classList.remove('open');
           event.target.classList.remove('visible');
           event.target.setAttribute('aria-hidden', 'true');
+          updateModalState();
         } else if (!event.target.closest('.nav-panel') && !event.target.closest('.tab')) {
           closeNavPanels();
         }
@@ -960,6 +1046,7 @@
         taskModal.classList.remove('open');
         taskModal.classList.remove('visible');
         taskModal.setAttribute('aria-hidden', 'true');
+        updateModalState();
       });
 
       modeChips.forEach((chip) => {
@@ -974,6 +1061,7 @@
       homeButton.addEventListener('click', () => {
         setHomeView(true);
         closeNavPanels();
+        addSystemLog('返回主页面');
       });
 
       homeCards.forEach((card) => {
@@ -1006,6 +1094,13 @@
       });
 
       document.querySelectorAll('.nav-submenu').forEach((submenu) => {
+        submenu.addEventListener('mouseenter', () => window.clearTimeout(navCloseTimer));
+        submenu.addEventListener('mouseleave', () => {
+          window.clearTimeout(navCloseTimer);
+          navCloseTimer = window.setTimeout(() => {
+            closeNavPanels();
+          }, 160);
+        });
         submenu.addEventListener('click', (event) => {
           const target = event.target.closest('.nav-subitem');
           if (!target || target.classList.contains('is-disabled')) {
@@ -1034,12 +1129,14 @@
           if (!project) {
             return;
           }
-          if (action === 'mark-complete') {
-            project.status = 'completed';
-            addLogEntry(`项目已完成：${project.name}`);
-          } else if (action === 'cancel-complete') {
-            project.status = 'in-progress';
-            addLogEntry(`取消完成：${project.name}`);
+          if (action === 'toggle-complete') {
+            if (project.status === 'completed') {
+              project.status = 'in-progress';
+              addLogEntry(`取消完成：${project.name}`);
+            } else {
+              project.status = 'completed';
+              addLogEntry(`项目已完成：${project.name}`);
+            }
           }
           renderProjectSubmenus();
           renderProjectStatusList();
