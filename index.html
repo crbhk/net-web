@@ -84,16 +84,26 @@
           </div>
           <div class="home-cards">
             <button class="home-card home-card-create" data-action="new-project">新建项目</button>
-            <div class="home-card-group" data-home-group="in-progress">
-              <button class="home-card home-card-progress" data-action="project-in-progress">
-                正在进行
-              </button>
+            <div
+              class="home-card home-card-progress"
+              data-action="project-in-progress"
+              role="group"
+              aria-label="正在进行项目"
+            >
+              <div class="home-card-header">
+                <div class="home-card-title">正在进行</div>
+              </div>
               <div class="home-submenu" data-home-submenu="in-progress"></div>
             </div>
-            <div class="home-card-group" data-home-group="completed">
-              <button class="home-card home-card-completed" data-action="project-completed">
-                已完成
-              </button>
+            <div
+              class="home-card home-card-completed"
+              data-action="project-completed"
+              role="group"
+              aria-label="已完成项目"
+            >
+              <div class="home-card-header">
+                <div class="home-card-title">已完成</div>
+              </div>
               <div class="home-submenu" data-home-submenu="completed"></div>
             </div>
           </div>
@@ -337,10 +347,8 @@
       const projectSubmenuCompleted = document.querySelector('[data-submenu="completed"]');
       const homeSubmenuInProgress = document.querySelector('[data-home-submenu="in-progress"]');
       const homeSubmenuCompleted = document.querySelector('[data-home-submenu="completed"]');
-      const homeCardGroups = document.querySelectorAll('.home-card-group');
       let toastTimer;
       let navCloseTimer;
-      let submenuCloseTimer;
       const projects = [];
       const maxRecentTasks = 10;
       const taskLogs = [
@@ -474,6 +482,77 @@
           accent: '#2563eb',
           accentSoft: 'rgba(37, 99, 235, 0.18)',
           brand: 'linear-gradient(135deg, #93c5fd, #2563eb)',
+        },
+        {
+          name: '星域霓蓝',
+          lightBackground:
+            'radial-gradient(circle at top, #f6f9ff 0%, #dbe7ff 45%, #c2d3f2 100%)',
+          darkBackground:
+            'radial-gradient(circle at top, #16233f 0%, #0c1528 48%, #070b14 100%)',
+          accent: '#38bdf8',
+          accentSoft: 'rgba(56, 189, 248, 0.2)',
+          brand: 'linear-gradient(135deg, #60a5fa, #22d3ee)',
+        },
+        {
+          name: '霓虹熔彩',
+          lightBackground:
+            'radial-gradient(circle at top, #fff7ed 0%, #e0f2fe 45%, #ffd5c2 100%)',
+          darkBackground:
+            'radial-gradient(circle at top, #1c1f2b 0%, #141725 48%, #0c0f18 100%)',
+          accent: '#fb923c',
+          accentSoft: 'rgba(251, 146, 60, 0.22)',
+          brand: 'linear-gradient(135deg, #60a5fa, #fb923c)',
+        },
+        {
+          name: '工业雾钢',
+          lightBackground:
+            'radial-gradient(circle at top, #f4f6f9 0%, #e2e7ef 45%, #d2dbe6 100%)',
+          darkBackground:
+            'radial-gradient(circle at top, #1b222c 0%, #11161f 48%, #0b0f15 100%)',
+          accent: '#64748b',
+          accentSoft: 'rgba(100, 116, 139, 0.22)',
+          brand: 'linear-gradient(135deg, #b0bac6, #64748b)',
+        },
+        {
+          name: '柔雾银',
+          lightBackground:
+            'radial-gradient(circle at top, #f8fafc 0%, #e9eef6 45%, #dde4f0 100%)',
+          darkBackground:
+            'radial-gradient(circle at top, #202635 0%, #151a26 48%, #0d111a 100%)',
+          accent: '#06b6d4',
+          accentSoft: 'rgba(6, 182, 212, 0.18)',
+          brand: 'linear-gradient(135deg, #a5f3fc, #06b6d4)',
+        },
+        {
+          id: 'neon-city',
+          name: '霓虹城',
+          lightBackground:
+            'radial-gradient(circle at top, #f6f9ff 0%, #e1eaff 45%, #ccd7f6 100%)',
+          darkBackground:
+            'radial-gradient(circle at 18% 20%, rgba(76, 110, 255, 0.35), transparent 55%), radial-gradient(circle at 82% 18%, rgba(236, 72, 153, 0.22), transparent 55%), radial-gradient(circle at 50% 80%, rgba(56, 189, 248, 0.25), transparent 60%), linear-gradient(180deg, #070914 0%, #0b1024 52%, #080b1b 100%)',
+          accent: '#38bdf8',
+          accentSoft: 'rgba(56, 189, 248, 0.22)',
+          brand: 'linear-gradient(135deg, #4f46e5, #38bdf8)',
+          light: {
+            surface: 'rgba(245, 248, 255, 0.86)',
+            surfaceStrong: 'rgba(255, 255, 255, 0.94)',
+            text: '#0f172a',
+            muted: '#5b678a',
+            border: 'rgba(79, 70, 229, 0.2)',
+            shadow: '0 26px 60px rgba(56, 68, 130, 0.28)',
+            shadowSoft: '0 12px 30px rgba(56, 68, 130, 0.2)',
+            glow: '0 0 0 1px rgba(99, 102, 241, 0.25) inset, 0 10px 30px rgba(99, 102, 241, 0.2)',
+          },
+          dark: {
+            surface: 'rgba(12, 16, 30, 0.78)',
+            surfaceStrong: 'rgba(16, 21, 38, 0.92)',
+            text: '#e5edff',
+            muted: '#9fb0d9',
+            border: 'rgba(99, 102, 241, 0.32)',
+            shadow: '0 30px 70px rgba(4, 8, 20, 0.65)',
+            shadowSoft: '0 16px 36px rgba(4, 8, 20, 0.5)',
+            glow: '0 0 0 1px rgba(56, 189, 248, 0.22) inset, 0 0 26px rgba(59, 130, 246, 0.28)',
+          },
         },
       ];
       let currentThemeIndex = 0;
@@ -628,6 +707,7 @@
             .forEach((button) => button.classList.toggle('active', button === defaultItem));
         }
         setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+        renderProjectStatusList();
         return true;
       };
 
@@ -707,7 +787,14 @@
           projectStatusList.appendChild(emptyState);
           return;
         }
-        projects.forEach((project) => {
+        if (!currentProject) {
+          const emptyState = document.createElement('div');
+          emptyState.className = 'project-status-empty';
+          emptyState.textContent = '暂无当前项目，请先选择项目。';
+          projectStatusList.appendChild(emptyState);
+          return;
+        }
+        [currentProject].forEach((project) => {
           const row = document.createElement('div');
           row.className = 'project-status-item';
           row.innerHTML = `
@@ -730,6 +817,7 @@
       const applyTheme = (theme) => {
         const root = document.documentElement;
         const isDarkMode = document.body.classList.contains('theme-dark');
+        const variant = isDarkMode ? theme.dark : theme.light;
         root.style.setProperty(
           '--page-bg',
           isDarkMode ? theme.darkBackground : theme.lightBackground,
@@ -737,6 +825,27 @@
         root.style.setProperty('--accent', theme.accent);
         root.style.setProperty('--accent-soft', theme.accentSoft);
         root.style.setProperty('--brand-gradient', theme.brand);
+        [
+          ['--surface', variant?.surface],
+          ['--surface-strong', variant?.surfaceStrong],
+          ['--text', variant?.text],
+          ['--muted', variant?.muted],
+          ['--border', variant?.border],
+          ['--shadow', variant?.shadow],
+          ['--shadow-soft', variant?.shadowSoft],
+          ['--glow', variant?.glow],
+        ].forEach(([key, value]) => {
+          if (value) {
+            root.style.setProperty(key, value);
+          } else {
+            root.style.removeProperty(key);
+          }
+        });
+        if (theme.id) {
+          document.body.dataset.theme = theme.id;
+        } else {
+          delete document.body.dataset.theme;
+        }
       };
 
       const updateThemePreviews = () => {
@@ -807,7 +916,7 @@
           window.clearTimeout(navCloseTimer);
           navCloseTimer = window.setTimeout(() => {
             closeNavPanels();
-          }, 160);
+          }, 260);
         };
 
         tab.addEventListener('click', (event) => {
@@ -817,6 +926,17 @@
 
         navGroup.addEventListener('mouseenter', openPanel);
         navGroup.addEventListener('mouseleave', scheduleClose);
+      });
+
+      navPanels.forEach((panel) => {
+        panel.addEventListener('mouseenter', () => {
+          window.clearTimeout(navCloseTimer);
+        });
+        panel.addEventListener('mouseleave', () => {
+          navCloseTimer = window.setTimeout(() => {
+            closeNavPanels();
+          }, 260);
+        });
       });
 
       menuItems.forEach((item) => {
@@ -893,8 +1013,6 @@
             projectInput.value = '';
             projectInput.focus();
           } else if (action === 'project-in-progress') {
-            const group = item.closest('.nav-item-group');
-            group?.classList.add('open');
             if (!hasProjectsByStatus('in-progress')) {
               showToast('暂无正在进行的项目', item);
             } else {
@@ -902,8 +1020,6 @@
             }
             shouldCloseNav = false;
           } else if (action === 'project-completed') {
-            const group = item.closest('.nav-item-group');
-            group?.classList.add('open');
             if (!hasProjectsByStatus('completed')) {
               showToast('暂无已完成的项目', item);
             } else {
@@ -1072,11 +1188,12 @@
       });
 
       homeCards.forEach((card) => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (event) => {
+          if (event.target.closest('.home-submenu')) {
+            return;
+          }
           const action = card.dataset.action;
           if (action === 'project-in-progress' || action === 'project-completed') {
-            const targetGroup = card.closest('.home-card-group');
-            targetGroup?.classList.add('open');
             const status = action === 'project-in-progress' ? 'in-progress' : 'completed';
             if (!hasProjectsByStatus(status)) {
               showToast('暂无可选项目', card);
@@ -1092,28 +1209,25 @@
 
       document.querySelectorAll('.nav-item-group').forEach((group) => {
         const trigger = group.querySelector('.nav-item');
-        if (!trigger) {
+        const submenu = group.querySelector('.nav-submenu');
+        if (!trigger || !submenu) {
           return;
         }
+        let groupCloseTimer;
         const openGroup = () => {
-          window.clearTimeout(submenuCloseTimer);
+          window.clearTimeout(groupCloseTimer);
           group.classList.add('open');
         };
-        const closeGroup = () => {
-          window.clearTimeout(submenuCloseTimer);
-          submenuCloseTimer = window.setTimeout(() => {
-            group.classList.remove('open');
-          }, 220);
+        const scheduleGroupClose = () => {
+          window.clearTimeout(groupCloseTimer);
+          groupCloseTimer = window.setTimeout(() => group.classList.remove('open'), 240);
         };
-        group.addEventListener('mouseenter', openGroup);
-        group.addEventListener('mouseleave', closeGroup);
+        trigger.addEventListener('mouseenter', openGroup);
+        trigger.addEventListener('mouseleave', scheduleGroupClose);
+        submenu.addEventListener('mouseenter', openGroup);
+        submenu.addEventListener('mouseleave', scheduleGroupClose);
         trigger.addEventListener('click', (event) => {
           event.stopPropagation();
-          if (group.classList.contains('open')) {
-            group.classList.remove('open');
-          } else {
-            openGroup();
-          }
         });
       });
 
@@ -1134,15 +1248,9 @@
         });
       });
 
-      homeCardGroups.forEach((group) => {
-        const openGroup = () => group.classList.add('open');
-        const closeGroup = () => group.classList.remove('open');
-        group.addEventListener('mouseenter', openGroup);
-        group.addEventListener('mouseleave', closeGroup);
-      });
-
       document.querySelectorAll('.home-submenu').forEach((submenu) => {
         submenu.addEventListener('click', (event) => {
+          event.stopPropagation();
           const target = event.target.closest('.home-subitem');
           if (!target || target.classList.contains('is-disabled')) {
             return;
