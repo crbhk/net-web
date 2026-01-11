@@ -348,7 +348,7 @@ body.theme-dark {
   border: none;
   border-radius: 24px;
   padding: 24px;
-  font-size: 22px;
+  font-size: 66px;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, rgba(73, 141, 255, 0.9), rgba(0, 102, 255, 0.95));
@@ -357,7 +357,7 @@ body.theme-dark {
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   aspect-ratio: 1.618 / 1;
-  min-height: 140px;
+  min-height: 200px;
   display: grid;
   place-items: center;
 }
@@ -1208,9 +1208,9 @@ body.theme-dark .project-state.is-completed {
   background: var(--surface-strong);
   border: 1px solid var(--border);
   border-radius: 16px;
-  padding: 10px;
+  padding: 16px;
   display: grid;
-  gap: 6px;
+  gap: 10px;
   opacity: 0;
   pointer-events: none;
   transform: translateY(-6px);
@@ -1229,11 +1229,11 @@ body.theme-dark .project-state.is-completed {
 .home-subitem {
   border: none;
   background: rgba(246, 248, 252, 0.92);
-  padding: 8px 10px;
-  border-radius: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
   text-align: left;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 16px;
   color: var(--text);
   box-shadow: var(--shadow-soft);
 }
@@ -1252,6 +1252,11 @@ body.theme-dark .project-state.is-completed {
 
 body.modal-open .top-bar {
   background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+}
+
+body.modal-open.theme-dark .top-bar {
+  border-color: rgba(148, 163, 184, 0.2);
 }
 
 @keyframes progress-fill {

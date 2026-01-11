@@ -628,6 +628,7 @@
             .forEach((button) => button.classList.toggle('active', button === defaultItem));
         }
         setSidebarTitle(currentProject ? currentProject.name : '项目管理');
+        renderProjectStatusList();
         return true;
       };
 
@@ -700,14 +701,14 @@
           return;
         }
         projectStatusList.innerHTML = '';
-        if (!projects.length) {
+        if (!currentProject) {
           const emptyState = document.createElement('div');
           emptyState.className = 'project-status-empty';
-          emptyState.textContent = '暂无项目，可先新建项目。';
+          emptyState.textContent = '暂无当前项目，请先选择项目。';
           projectStatusList.appendChild(emptyState);
           return;
         }
-        projects.forEach((project) => {
+        [currentProject].forEach((project) => {
           const row = document.createElement('div');
           row.className = 'project-status-item';
           row.innerHTML = `
@@ -893,8 +894,6 @@
             projectInput.value = '';
             projectInput.focus();
           } else if (action === 'project-in-progress') {
-            const group = item.closest('.nav-item-group');
-            group?.classList.add('open');
             if (!hasProjectsByStatus('in-progress')) {
               showToast('暂无正在进行的项目', item);
             } else {
@@ -902,8 +901,6 @@
             }
             shouldCloseNav = false;
           } else if (action === 'project-completed') {
-            const group = item.closest('.nav-item-group');
-            group?.classList.add('open');
             if (!hasProjectsByStatus('completed')) {
               showToast('暂无已完成的项目', item);
             } else {
@@ -1075,8 +1072,6 @@
         card.addEventListener('click', () => {
           const action = card.dataset.action;
           if (action === 'project-in-progress' || action === 'project-completed') {
-            const targetGroup = card.closest('.home-card-group');
-            targetGroup?.classList.add('open');
             const status = action === 'project-in-progress' ? 'in-progress' : 'completed';
             if (!hasProjectsByStatus(status)) {
               showToast('暂无可选项目', card);
@@ -1107,14 +1102,6 @@
         };
         group.addEventListener('mouseenter', openGroup);
         group.addEventListener('mouseleave', closeGroup);
-        trigger.addEventListener('click', (event) => {
-          event.stopPropagation();
-          if (group.classList.contains('open')) {
-            group.classList.remove('open');
-          } else {
-            openGroup();
-          }
-        });
       });
 
       document.querySelectorAll('.nav-submenu').forEach((submenu) => {
