@@ -154,6 +154,7 @@ body.theme-dark {
   display: grid;
   gap: 8px;
   min-width: 180px;
+  overflow: visible;
   opacity: 0;
   pointer-events: none;
   transition: all 0.2s ease;
@@ -332,8 +333,8 @@ body.theme-dark {
 
 .home-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 18px;
   flex: 1;
   align-content: start;
 }
@@ -341,8 +342,8 @@ body.theme-dark {
 .home-card {
   border: none;
   border-radius: 24px;
-  padding: 28px;
-  font-size: 20px;
+  padding: 22px;
+  font-size: 22px;
   font-weight: 600;
   color: #fff;
   background: linear-gradient(135deg, rgba(73, 141, 255, 0.9), rgba(0, 102, 255, 0.95));
@@ -350,8 +351,8 @@ body.theme-dark {
   cursor: pointer;
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  aspect-ratio: 1 / 1;
-  min-height: 180px;
+  aspect-ratio: 1.618 / 1;
+  min-height: 140px;
   display: grid;
   place-items: center;
 }
@@ -376,10 +377,6 @@ body.home-active .layout {
 
 body.home-active .home-view {
   display: flex;
-}
-
-body.home-active .task-button {
-  display: none;
 }
 
 .sidebar {
@@ -446,6 +443,19 @@ body.home-active .task-button {
 .task-icon {
   font-size: 20px;
   color: var(--accent);
+}
+
+.task-button-floating {
+  position: fixed;
+  left: 32px;
+  bottom: 32px;
+  margin-top: 0;
+  display: none;
+  z-index: 15;
+}
+
+body.home-active .task-button-floating {
+  display: grid;
 }
 
 .primary {
@@ -722,6 +732,12 @@ body.home-active .task-button {
   display: flex;
 }
 
+body.modal-open .top-bar {
+  background: var(--bg);
+  border-color: rgba(160, 165, 175, 0.25);
+  box-shadow: 0 16px 34px rgba(15, 18, 25, 0.2);
+}
+
 .modal-card {
   background: var(--surface-strong);
   border-radius: 20px;
@@ -756,7 +772,7 @@ body.home-active .task-button {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .task-row {
@@ -768,7 +784,7 @@ body.home-active .task-button {
 }
 
 .task-row span {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-right: 1px solid var(--border);
   display: flex;
   align-items: center;
@@ -1030,7 +1046,7 @@ body.theme-dark .theme-card {
   border: 1px solid var(--border);
   border-radius: 12px;
   overflow: hidden;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .log-row {
